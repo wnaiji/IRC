@@ -33,32 +33,31 @@ Server::Server(int const & pPort, string const & pPassword)
 
 void    Server::init(void)
 {
-    this->_fd_socket = socket(AF_INET6, SOCK_STREAM, 0);
-    if (this->_fd_socket == -1)
-        throw std::runtime_error("Error: Server::init: socket fail");
-
-    fcntl(this->_fd_socket, F_SETFL, O_NONBLOCK);
-
-    const int opt_off = 0;
-    if (setsockopt(this->_fd_socket, IPPROTO_IPV6, IPV6_V6ONLY, &opt_off, sizeof(opt_off)) == -1)
-        throw std::runtime_error("Error: Server::init: first setsockopt fail");
-    const int opt_on = 1;
-    if (setsockopt(this->_fd_socket, SOL_SOCKET, SO_REUSEADDR, &opt_on, sizeof(opt_on)) == -1)
-        throw std::runtime_error("Error: Server::init: second setsockopt fail");
-
     const t_in6_addr  set_sin6_addr = IN6ADDR_ANY_INIT;
+    
     this->_addr.sin6_family = AF_INET6;
     this->_addr.sin6_port = htons(this->_port);
     this->_addr.sin6_flowinfo = 0;
     this->_addr.sin6_addr = set_sin6_addr;
     this->_addr.sin6_scope_id = 0;
 
+    this->_fd_socket = socket(AF_INET6, SOCK_STREAM, 0);
+    if (this->_fd_socket == -1)
+        throw std::runtime_error("Error: Server::init: socket fail");
+
+    if (fcntl(this->_fd_socket, F_SETFL, O_NONBLOCK) == -1)
+        throw std::runtime_error("Error: Server::init: fcntl()");
+    //const int opt_off = 0;
+    //if (setsockopt(this->_fd_socket, IPPROTO_IPV6, IPV6_V6ONLY, &opt_off, sizeof(opt_off)) == -1)
+    //    throw std::runtime_error("Error: Server::init: first setsockopt fail");
+    const int opt_on = 1;
+    if (setsockopt(this->_fd_socket, SOL_SOCKET, SO_REUSEADDR, &opt_on, sizeof(opt_on)) == -1)
+        throw std::runtime_error("Error: Server::init: second setsockopt fail");
+
+
     if (bind(this->_fd_socket, reinterpret_cast<t_sockaddr *>(&this->_addr), sizeof(this->_addr)) == -1)
-    {
-        cout << strerror(errno) << endl;
-        throw std::runtime_error("Error: Server::init: bind fail");
-    }     
-    if (listen(this->_fd_socket, 8) == -1)
+        throw std::runtime_error("Error: Server::init: bind fail");     
+    if (listen(this->_fd_socket, SOMAXCONN) == -1)
         throw std::runtime_error("Error: Server::init: listen fail");
 
     this->_fd_epoll = epoll_create1(0);

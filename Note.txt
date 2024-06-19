@@ -1,0 +1,44 @@
+#Note
+
+1- creation du server:
+
+je cree une class server dans le quel je vais pouvoir init() puis run().
+
+=> methode init() <=
+
+-creation de la socket() avec les flags AF_INET6 pour IPv6 et SOCK_STREAM pour TCP
+
+-definition des options de la socket avec setsockopt()
+    SO_REUSEADDR pour lui permettre la reutilisation de l'adresse
+
+-configuration de la socket en mode non-bloquant avec fcntl()
+    F_SETFL defini les flags du descripteur de fichier
+    O_NONBLOCK flag non-bloquant
+
+-Liaison du socket a l'adresse avec bind():
+    en utilisant la structure sockaddr_in prealablement initialise
+    
+    sin6_family = AF_INET6 -> definie la famille d'addresse a IPv6
+    sin6_port = htons(this->_port); -> converti le port dans l'ordre des octets du reseau (big endian)
+    sin6_flowinfo = 0;
+    sin6_addr = set_sin6_addr; -> fixe l'adresse a n'importe quelle adresse de machine locale
+    sin6_scope_id = 0;
+
+-Mise en ecoute du socket avec listen():
+    Met le socket en mode ecoute pour accepter les connexions entrantes
+    SOMAXCONN est le nombre maxium de connexions
+
+-creation d'un objet epoll 
+    => epoll_create1();
+    il retournera un dexcripteur de fichier pour l'ojet epoll
+    => epoll_ctl():
+    modifie les descripteurs de fichiers surveille par l'objet epoll
+    avec la structure epoll_event:
+
+    events = EPOLLIN; -> evenement d'entre a surveiller et l'adresse associee 
+    data.fd = this->_fd_socket;
+
+
+==>>>> Reprise de la suite du projet: <<<<==
+
+
