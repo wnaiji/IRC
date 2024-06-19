@@ -12,7 +12,7 @@
 # include <arpa/inet.h>
 # include <fcntl.h>
 # include <map>
-# include <cerrno>
+# include <cerrno> // for strerror and global errno
 # include <cstring>
 // end to see
 # include <sys/epoll.h> // for epoll_create1(), epoll_ctl(), struct epoll_event

@@ -61,10 +61,6 @@ void    Server::init(void)
     if (listen(this->_fd_socket, 8) == -1)
         throw std::runtime_error("Error: Server::init: listen fail");
 
-    // socklen_t   addr_len = sizeof(addr);
-    // int client_fd = accept(this->_fd_socket, reinterpret_cast<t_sockaddr *>(&addr), &addr_len);
-    // if (client_fd == -1)
-    //      throw std::runtime_error("Error: Server: accept fail");
     this->_fd_epoll = epoll_create1(0);
     if (this->_fd_epoll == -1)
         throw std::runtime_error("Error: Server::init: epoll_create1 fail");
@@ -124,9 +120,11 @@ void    Server::run(void)
                     size_t last_find = 0;
                     for (size_t i = 0; i < msg.length(); i++)
                     {
-                        // creation des clients ici
                         if (msg[i] == '\r' || msg[i] == '\n')
                         {   
+                            //gestion des commandes les une apres les autres
+                            //gestion des retours d'erreur avec errno
+                            //liste des commandes -> pars des cmds -> gestion en fonction des cmds
                             manageCmd(msg.substr(last_find, i - last_find), this->_clients, client_fd);
                             i++;
                             if (i < msg.length() && msg[i] == '\n')

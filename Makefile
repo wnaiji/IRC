@@ -6,7 +6,7 @@ CC				= c++
 
 RM				= rm -f
 
-NAME			= ft_irc
+NAME			= ircserv
 
 CFLAGS			= -Wall -Wextra -Werror -std=c++98
 
