@@ -15,11 +15,6 @@ Client::~Client(void)
 
 /*---------------GETTER---------------*/
 
-std::string const & Client::getPass(void) const
-{
-    return this->_pass;
-}
-
 std::string const & Client::getNick(void) const
 {
     return this->_nick;
@@ -46,12 +41,6 @@ struct epoll_event const & Client::getEvent(void) const
 }
 
 /*---------------SETTER---------------*/
-
-void                Client::setPass(std::string const & pass)
-{
-    this->_pass = pass;
-    return ;
-}
 
 void                Client::setNick(std::string const & nick)
 {
@@ -89,4 +78,81 @@ void                Client::setEvent(void)
 
 /*--------------MANAGEMENT_CLIENTS--------------*/
 
+    /*reception de la str entier    *
+    * pars pour recup la 1er ligne  *
+    * recup par la suite du 1er mot *
+    * check si commande valide      *
+    * continuer si tout est bon ou  *
+    * demande du mot de pass sinon  *
+    * disconnect le new client      */
 
+static bool checkPass(std::string const & line, std::string const & pass)
+{
+    int         start = 0;
+    std::string tmp;
+
+    for (int i = 0; line[i]; i++)
+    {
+        if (line[i] == ' ')
+        {
+            tmp = line.substr(start, i);
+            start = i + 1;
+            break ;
+        }
+    }
+    if (tmp == "PASS")
+        tmp = line.substr(start, line.size());
+    cout << "###=>" << tmp << "<=###" << pass << endl;
+    return tmp == pass;
+}
+
+void    Client::initClient(std::string const & line)
+{
+    int         start = 0;
+    std::string tmp;
+
+    for (int i = 0; line[i]; i++)
+    {
+        if (line[i] == ' ')
+        {
+            tmp = line.substr(start, i);
+            start = i + 1;
+            break ;
+        }
+    }
+    if (tmp == "NICK")
+    {
+        tmp = line.substr(start, line.size());
+        this->setNick(tmp);
+    }
+    else if (tmp == "USER" && !this->_nick.empty())
+    {
+        tmp = line.substr(start, line.size());
+        this->setUser(tmp);
+    }
+    return ;
+}
+
+void    Client::newClient(std::string const & msg, std::string const & pass)
+{
+    int     start = 0;
+    string  tmp;
+
+    for (int i = 0; msg[i]; i++)
+    {
+        if (msg[i] == '\n' || msg[i] == '\r')
+        {
+            tmp = msg.substr(start, i);
+            if (checkPass(tmp, pass) == true)
+                this->setIsNew(false);
+            else if (this->_isNew == false)
+                initClient(tmp);
+            start = i + 1;
+        }
+    }
+    if (tmp.empty() || this->getIsNew() == false)
+    {
+        tmp = msg.substr(start, msg.size());
+        initClient(tmp);
+    }
+}

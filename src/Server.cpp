@@ -100,15 +100,20 @@ void    Server::run(void)
                     {
                         if (msg[i] == '\r' || msg[i] == '\n')
                         {   
-                            //if (client[client_fd].getIsNew() == true)
-                            //  newClient(msg); pars des diferente commande dans la fonction
+                            if (this->_clients[client_fd].getIsNew() == true)
+                              this->_clients[client_fd].newClient(msg, this->_password); //pars des diferente commande dans la fonction
                             //else
-                            //  manageCmd(msg); pars de la commande dans la fonction
-                            manageCmd(msg.substr(last_find, i - last_find), client_fd);
-                            i++;
-                            if (i < msg.length() && msg[i] == '\n')
-                                i++;
-                            last_find = i;
+                            //  manageCmd(msg); //pars de la commande dans la fonction
+                            //manageCmd(msg.substr(last_find, i - last_find), client_fd);
+                            //i++;
+                            //if (i < msg.length() && msg[i] == '\n')
+                            //    i++;
+                            //last_find = i;
+                            cout << "=====> " << this->_clients[client_fd].getFd() << endl;
+                            cout << "=====> " << this->_clients[client_fd].getNick() << endl;
+                            cout << "=====> " << this->_clients[client_fd].getUser() << endl;
+
+                            send(client_fd, "PONG", 4, 0);
                         }
                     }
                     if (last_find < msg.length())
@@ -116,7 +121,7 @@ void    Server::run(void)
                         //gestion des commandes des commandes ici
                         cout << "last cmd not end with pair of r n or r or n" << endl;
                         //manageCmd(msg.substr(last_find), client, client_fd);
-                    }                    
+                    }
                 }
                 else
                     cout << "bytes_read == 0 to see " << bytes_read << endl;
