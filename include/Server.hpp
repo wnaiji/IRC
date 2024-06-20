@@ -46,12 +46,11 @@ class Server
 		int						_fd_socket;
 		t_sockaddr_in6 			_addr;
 		int						_fd_epoll;
-		std::map<int, Client *>	_clients;
+		std::map<int, Client>	_clients;
 	private:
 		Server(void);
 		Server(Server const & pSrc);
-		Server &	operator=(Server const & pRhs);
-		void		manageCmd(std::string const & pMsg, std::map<int, Client *> & client, int client_fd); 
+		void		manageCmd(std::string const & pMsg, int client_fd); 
 	public:
 		Server(int const & pPort, string const & pPassword);
 		~Server(void);

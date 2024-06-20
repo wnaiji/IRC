@@ -1,29 +1,9 @@
 #include "Server.hpp"
 
-void		Server::manageCmd(std::string const & pMsg, std::map<int , Client *> & client, int client_fd)
+void		Server::manageCmd(std::string const & pMsg, int client_fd)
 {
-    string  trimMsg = pMsg;
-    
-    if ((client.find(client_fd) == client.end() || !client[client_fd]))
-    {
-        client[client_fd] = new Client();
-        client[client_fd]->setCapLs(trimMsg);
-    }
-    else if (client[client_fd]->getPass().empty())
-    {
-        trimMsg.erase(0, 5);
-        client[client_fd]->setPass(trimMsg);
-    }
-    else if (client[client_fd]->getNick().empty())
-    {
-        trimMsg.erase(0, 5);
-        client[client_fd]->setNick(trimMsg);
-    }
-    else if (client[client_fd]->getUser().empty())
-    {
-        trimMsg.erase(0, 5);
-        client[client_fd]->setUser(trimMsg);
-    }
+    (void) pMsg;
+    (void) client_fd;
 }
 
 Server::Server(int const & pPort, string const & pPassword) 
@@ -43,43 +23,41 @@ void    Server::init(void)
 
     this->_fd_socket = socket(AF_INET6, SOCK_STREAM, 0);
     if (this->_fd_socket == -1)
-        throw std::runtime_error("Error: Server::init: socket fail");
+        throw std::runtime_error("Error: Server::init: socket()");
 
     if (fcntl(this->_fd_socket, F_SETFL, O_NONBLOCK) == -1)
         throw std::runtime_error("Error: Server::init: fcntl()");
-    //const int opt_off = 0;
-    //if (setsockopt(this->_fd_socket, IPPROTO_IPV6, IPV6_V6ONLY, &opt_off, sizeof(opt_off)) == -1)
-    //    throw std::runtime_error("Error: Server::init: first setsockopt fail");
     const int opt_on = 1;
     if (setsockopt(this->_fd_socket, SOL_SOCKET, SO_REUSEADDR, &opt_on, sizeof(opt_on)) == -1)
-        throw std::runtime_error("Error: Server::init: second setsockopt fail");
+        throw std::runtime_error("Error: Server::init: setsockopt()");
 
 
     if (bind(this->_fd_socket, reinterpret_cast<t_sockaddr *>(&this->_addr), sizeof(this->_addr)) == -1)
-        throw std::runtime_error("Error: Server::init: bind fail");     
+        throw std::runtime_error("Error: Server::init: bind()");     
     if (listen(this->_fd_socket, SOMAXCONN) == -1)
-        throw std::runtime_error("Error: Server::init: listen fail");
+        throw std::runtime_error("Error: Server::init: listen()");
 
     this->_fd_epoll = epoll_create1(0);
     if (this->_fd_epoll == -1)
-        throw std::runtime_error("Error: Server::init: epoll_create1 fail");
+        throw std::runtime_error("Error: Server::init: epoll_create1()");
     t_epoll_event   event;
     event.events = EPOLLIN;
     event.data.fd = this->_fd_socket;
     if (epoll_ctl(this->_fd_epoll, EPOLL_CTL_ADD, this->_fd_socket, &event) == -1)
     {
         close(this->_fd_epoll);
-        throw std::runtime_error("Error: Server::init: epoll_ctl this->_fd_socket fail");        
+        throw std::runtime_error("Error: Server::init: epoll_ctl()");        
     }
 }
 
 void    Server::run(void)
 {
     int             event_count;
-    t_epoll_event   event;
     t_epoll_event   events[MAX_EVENTS];
     int             client_fd;
     char            read_buffer[READ_BUFFER_SIZE + 1];
+    
+    memset(read_buffer, 0, sizeof(read_buffer));
     while (true)
     {
         cout << "polling start" << endl;
@@ -92,51 +70,47 @@ void    Server::run(void)
                 socklen_t   addr_len = sizeof(this->_addr);
                 client_fd = accept(this->_fd_socket, reinterpret_cast<t_sockaddr *>(&this->_addr), &addr_len);
                 if (client_fd == -1)
-                    cerr << "Error: Server::run: accept fail" << endl;
+                    cerr << "Error: Server::run: accept()" << endl;
                 else
                 {
                     cout << "new connection" << endl;
-                    event.events = EPOLLIN | EPOLLET;
-                    event.data.fd = client_fd;
+                    this->_clients[client_fd].setFd(client_fd);
+                    this->_clients[client_fd].setEvent();
+                    this->_clients[client_fd].setIsNew(true);
+                    struct epoll_event event = this->_clients[client_fd].getEvent();
                     if (epoll_ctl(this->_fd_epoll, EPOLL_CTL_ADD, client_fd, &event) == -1)
-                        cerr << "Error: Server::run: epoll_ctl client_fd fail" << endl;
-                    this->_clients[client_fd] = NULL;
+                        cerr << "Error: Server::run: epoll_ctl()" << endl;
                 }
             }
             else
             {
-                cout << "reading fd : " << events[i].data.fd << endl;
+                cout << "reading fd : " << client_fd << endl;
                 ssize_t bytes_read;
                 bytes_read = recv(events[i].data.fd, read_buffer, READ_BUFFER_SIZE, 0);
-                read_buffer[bytes_read] = '\0';
-                if (bytes_read == -1)
-                    cerr << "Error: Server::run: recv fail." << endl;
+                if (bytes_read <= 0)
+                    this->_clients[client_fd].~Client();
                 else if (bytes_read == READ_BUFFER_SIZE)
                     cerr << "<client> :Input line was too long" << endl;
                 else if (bytes_read != 0)
                 {
+                    read_buffer[bytes_read] = '\0';
                     string msg(read_buffer);
                     size_t last_find = 0;
                     for (size_t i = 0; i < msg.length(); i++)
                     {
                         if (msg[i] == '\r' || msg[i] == '\n')
                         {   
-                            //gestion des commandes les une apres les autres
-                            //gestion des retours d'erreur avec errno
-                            //liste des commandes -> pars des cmds -> gestion en fonction des cmds
-                            manageCmd(msg.substr(last_find, i - last_find), this->_clients, client_fd);
+                            //if (client[client_fd].getIsNew() == true)
+                            //  newClient(msg); pars des diferente commande dans la fonction
+                            //else
+                            //  manageCmd(msg); pars de la commande dans la fonction
+                            manageCmd(msg.substr(last_find, i - last_find), client_fd);
                             i++;
                             if (i < msg.length() && msg[i] == '\n')
                                 i++;
                             last_find = i;
                         }
                     }
-                    std::cout << "========> " << client_fd << _clients[client_fd]->getCapLs() << std::endl;
-                    std::cout << "========> " << client_fd << _clients[client_fd]->getPass() << std::endl;
-                    std::cout << "========> " << client_fd << _clients[client_fd]->getNick() << std::endl;
-                    std::cout << "========> " << client_fd << _clients[client_fd]->getUser() << std::endl;
-                    if (this->_clients[client_fd]->getPass() != this->_password)
-                        cout << "Error: " << this->_clients[client_fd]->getNick() << ": MDP: faild." << endl;
                     if (last_find < msg.length())
                     {
                         //gestion des commandes des commandes ici

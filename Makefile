@@ -12,7 +12,8 @@ CFLAGS			= -Wall -Wextra -Werror -std=c++98
 
 SRCS			= $(addprefix $(SRC_DIR), \
 					ft_irc.cpp \
-					Server.cpp)
+					Server.cpp \
+					Client.cpp)
 
 OBJS			= $(addprefix $(OBJ_DIR), $(notdir $(SRCS:.cpp=.o)))
 
