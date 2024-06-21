@@ -78,6 +78,14 @@ void                Client::setEvent(void)
 
 /*--------------MANAGEMENT_CLIENTS--------------*/
 
+void    Client::init(sockaddr_in6 const & addr, int const & fd)
+{
+    this->_client_fd = fd;
+    this->setEvent();
+    this->setIsNew(true);
+    this->_addr = addr;
+}
+
     /*reception de la str entier    *
     * pars pour recup la 1er ligne  *
     * recup par la suite du 1er mot *

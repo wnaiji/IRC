@@ -19,6 +19,8 @@ public:
     Client(void);
     ~Client(void);
 
+    struct sockaddr_in6 		_addr;
+
     std::string const &         getNick(void) const;
     std::string const &         getUser(void) const;
     bool const &                getIsNew(void) const;
@@ -31,6 +33,7 @@ public:
     void                        setFd(int const & fd);
     void                        setEvent(void);
 
+    void                        init(struct sockaddr_in6 const & addr, int const & fd);
     void                        newClient(std::string const & msg, std::string const & pass);
 };
 

@@ -64,19 +64,18 @@ void    Server::run(void)
         event_count = epoll_wait(this->_fd_epoll, events, MAX_EVENTS, -1);
         cout << "events ready : " << event_count << endl;
         for (int i = 0; i < event_count; i++)
-        {
+        {/*une struct pour chaque client qui ce trouvera dans leur classe */
             if (events[i].data.fd == this->_fd_socket)
             {
-                socklen_t   addr_len = sizeof(this->_addr);
-                client_fd = accept(this->_fd_socket, reinterpret_cast<t_sockaddr *>(&this->_addr), &addr_len);
-                if (client_fd == -1)
+                struct sockaddr_in6 			clientAddr;
+                socklen_t   addr_len = sizeof(clientAddr);
+                client_fd = accept(this->_fd_socket, reinterpret_cast<t_sockaddr *>(&clientAddr), &addr_len);
+                if (client_fd == -1 || client_fd == 0)
                     cerr << "Error: Server::run: accept()" << endl;
                 else
                 {
-                    cout << "new connection" << endl;
-                    this->_clients[client_fd].setFd(client_fd);
-                    this->_clients[client_fd].setEvent();
-                    this->_clients[client_fd].setIsNew(true);
+                    cout << "new connection client_fd: " << client_fd << endl;
+                    this->_clients[client_fd].init(clientAddr, client_fd);
                     struct epoll_event event = this->_clients[client_fd].getEvent();
                     if (epoll_ctl(this->_fd_epoll, EPOLL_CTL_ADD, client_fd, &event) == -1)
                         cerr << "Error: Server::run: epoll_ctl()" << endl;
@@ -88,7 +87,7 @@ void    Server::run(void)
                 ssize_t bytes_read;
                 bytes_read = recv(events[i].data.fd, read_buffer, READ_BUFFER_SIZE, 0);
                 if (bytes_read <= 0)
-                    this->_clients[client_fd].~Client();
+                    this->_clients.erase(events[i].data.fd);
                 else if (bytes_read == READ_BUFFER_SIZE)
                     cerr << "<client> :Input line was too long" << endl;
                 else if (bytes_read != 0)
@@ -96,12 +95,12 @@ void    Server::run(void)
                     read_buffer[bytes_read] = '\0';
                     string msg(read_buffer);
                     size_t last_find = 0;
-                    for (size_t i = 0; i < msg.length(); i++)
+                    for (size_t j = 0; j < msg.length(); j++)
                     {
-                        if (msg[i] == '\r' || msg[i] == '\n')
+                        if (msg[j] == '\r' || msg[j] == '\n')
                         {   
-                            if (this->_clients[client_fd].getIsNew() == true)
-                              this->_clients[client_fd].newClient(msg, this->_password); //pars des diferente commande dans la fonction
+                            if (this->_clients[events[i].data.fd].getIsNew() == true || this->_clients[events[i].data.fd].getNick().empty() || this->_clients[events[i].data.fd].getUser().empty())
+                              this->_clients[events[i].data.fd].newClient(msg, this->_password); //pars des diferente commande dans la fonction
                             //else
                             //  manageCmd(msg); //pars de la commande dans la fonction
                             //manageCmd(msg.substr(last_find, i - last_find), client_fd);
@@ -109,17 +108,16 @@ void    Server::run(void)
                             //if (i < msg.length() && msg[i] == '\n')
                             //    i++;
                             //last_find = i;
-                            cout << "=====> " << this->_clients[client_fd].getFd() << endl;
-                            cout << "=====> " << this->_clients[client_fd].getNick() << endl;
-                            cout << "=====> " << this->_clients[client_fd].getUser() << endl;
-
-                            send(client_fd, "PONG", 4, 0);
+                            cout << "=====> " << events[i].data.fd << endl;
+                            cout << "=====> " << this->_clients[events[i].data.fd].getNick() << endl;
+                            cout << "=====> " << this->_clients[events[i].data.fd].getUser() << endl;
                         }
                     }
                     if (last_find < msg.length())
                     {
                         //gestion des commandes des commandes ici
-                        cout << "last cmd not end with pair of r n or r or n" << endl;
+                        if (this->_clients[events[i].data.fd].getIsNew() == true || this->_clients[events[i].data.fd].getNick().empty() || this->_clients[events[i].data.fd].getUser().empty())
+                              this->_clients[events[i].data.fd].newClient(msg, this->_password);
                         //manageCmd(msg.substr(last_find), client, client_fd);
                     }
                 }

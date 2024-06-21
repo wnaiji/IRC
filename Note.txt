@@ -41,4 +41,38 @@ je cree une class server dans le quel je vais pouvoir init() puis run().
 
 ==>>>> Reprise de la suite du projet: <<<<==
 
+enregistrement du client:
+
+commancer par la reception des commandes...
+si le client est nouveau envoie d'un message de bienvenue
+puis attendre la suite des commandes
+1er CAP LS (aucune reaction)
+puis PASS <MDP>
+NICK <PSEUDO>
+USER <USER>
+message de confirmation
+attente des commandes suivante
+
+nc => OK
+irssi => fail
+
+cration du sendMsg.cpp pour tout les messages de retour 
+les NICK de chaque client est unique, elle peut etre modifie mais le USER non
+
+NICK:   - Pas d'espace, pas de virgule, pas de '*'
+        pas de '?', pas de '!' et pas '@'
+        - Ne dois pas commencer par '$', ':', '#' ,'&'
+        - Ne dois pas contenir de '.'
+        - etre different des Commandes.
+
+Channels:   - Transmet les messages a tout les clients du Channel
+            - ce cree qund le 1er client le join
+            - ce supp quand le dernier client le quitte
+            - ce cree a partir de la commande JOIN #<name>
+            - ne dois contenir aucun espace est ','
+        
+    operant des channels:
+        KICK/MODE/INVITE/TOPIC
+            
+
 
