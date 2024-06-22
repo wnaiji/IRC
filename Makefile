@@ -13,14 +13,18 @@ CFLAGS			= -Wall -Wextra -Werror -std=c++98
 SRCS			= $(addprefix $(SRC_DIR), \
 					ft_irc.cpp \
 					Server.cpp \
-					Client.cpp)
+					Client.cpp \
+					SendMsg.cpp \
+					manageCmd.cpp \
+					passCmd.cpp)
 
 OBJS			= $(addprefix $(OBJ_DIR), $(notdir $(SRCS:.cpp=.o)))
 
 DEPS			= Makefile $(addprefix $(INC_DIR), \
-					ft_irc_error.hpp \
 					ft_irc.hpp \
-					Server.hpp)
+					Server.hpp \
+					Client.hpp \
+					SendMsg.hpp)
 
 all:			$(NAME)
 

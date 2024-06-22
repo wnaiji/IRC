@@ -12,6 +12,7 @@
 # include <arpa/inet.h>
 # include <fcntl.h>
 # include <map>
+# include <vector>
 # include <cerrno> // for strerror and global errno
 # include <cstring>
 // end to see
@@ -20,7 +21,6 @@
 //fe
 # include <sstream>
 
-# include "ft_irc_error.hpp"
 # include "Client.hpp"
 
 #define MAX_EVENTS 5000
@@ -46,7 +46,6 @@ class Server
 		int						_fd_socket;
 		t_sockaddr_in6 			_addr;
 		int						_fd_epoll;
-		std::map<int, Client>	_clients;
 	private:
 		Server(void);
 		Server(Server const & pSrc);
@@ -54,6 +53,8 @@ class Server
 	public:
 		Server(int const & pPort, string const & pPassword);
 		~Server(void);
+		
+		std::map<int, Client>	_clients;
 
 		void			init(void);
 		void			run(void);

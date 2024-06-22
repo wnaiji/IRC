@@ -64,7 +64,7 @@ void    Server::run(void)
         event_count = epoll_wait(this->_fd_epoll, events, MAX_EVENTS, -1);
         cout << "events ready : " << event_count << endl;
         for (int i = 0; i < event_count; i++)
-        {/*une struct pour chaque client qui ce trouvera dans leur classe */
+        {
             if (events[i].data.fd == this->_fd_socket)
             {
                 struct sockaddr_in6 			clientAddr;
@@ -99,27 +99,14 @@ void    Server::run(void)
                     {
                         if (msg[j] == '\r' || msg[j] == '\n')
                         {   
-                            if (this->_clients[events[i].data.fd].getIsNew() == true || this->_clients[events[i].data.fd].getNick().empty() || this->_clients[events[i].data.fd].getUser().empty())
-                              this->_clients[events[i].data.fd].newClient(msg, this->_password); //pars des diferente commande dans la fonction
-                            //else
-                            //  manageCmd(msg); //pars de la commande dans la fonction
-                            //manageCmd(msg.substr(last_find, i - last_find), client_fd);
-                            //i++;
-                            //if (i < msg.length() && msg[i] == '\n')
-                            //    i++;
-                            //last_find = i;
+                            this->_clients[events[i].data.fd].newMsg(msg, *this, events[i].data.fd);
                             cout << "=====> " << events[i].data.fd << endl;
                             cout << "=====> " << this->_clients[events[i].data.fd].getNick() << endl;
                             cout << "=====> " << this->_clients[events[i].data.fd].getUser() << endl;
                         }
                     }
                     if (last_find < msg.length())
-                    {
-                        //gestion des commandes des commandes ici
-                        if (this->_clients[events[i].data.fd].getIsNew() == true || this->_clients[events[i].data.fd].getNick().empty() || this->_clients[events[i].data.fd].getUser().empty())
-                              this->_clients[events[i].data.fd].newClient(msg, this->_password);
-                        //manageCmd(msg.substr(last_find), client, client_fd);
-                    }
+                        this->_clients[events[i].data.fd].newMsg(msg, *this, events[i].data.fd);
                 }
                 else
                     cout << "bytes_read == 0 to see " << bytes_read << endl;

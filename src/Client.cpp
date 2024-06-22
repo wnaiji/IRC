@@ -15,6 +15,16 @@ Client::~Client(void)
 
 /*---------------GETTER---------------*/
 
+bool const &    Client::getCap(void) const
+{
+    return this->_cap;
+}
+
+bool const &    Client::getPass(void) const
+{
+    return this->_pass;
+}
+
 std::string const & Client::getNick(void) const
 {
     return this->_nick;
@@ -42,17 +52,27 @@ struct epoll_event const & Client::getEvent(void) const
 
 /*---------------SETTER---------------*/
 
+void                Client::setCap(void)
+{
+    this->_cap = true;
+    return ;
+}
+
+void                Client::setPass(void)
+{
+    this->_pass = true;
+    return ;
+}
+
 void                Client::setNick(std::string const & nick)
 {
-    if (this->_isNew == false)
         this->_nick = nick;
     return ;
 }
 
 void                Client::setUser(std::string const & user)
 {
-    if (this->_isNew == false)
-        this->_user = user;
+    this->_user = user;
     return ;
 }
 
@@ -94,73 +114,15 @@ void    Client::init(sockaddr_in6 const & addr, int const & fd)
     * demande du mot de pass sinon  *
     * disconnect le new client      */
 
-static bool checkPass(std::string const & line, std::string const & pass)
+void    Client::newMsg(std::string const & msg, Server & Server, int const & fd)
 {
-    int         start = 0;
-    std::string tmp;
+    std::vector<std::string>    lines;
+    std::istringstream          stream(msg);
+    std::string                 line;
 
-    for (int i = 0; line[i]; i++)
-    {
-        if (line[i] == ' ')
-        {
-            tmp = line.substr(start, i);
-            start = i + 1;
-            break ;
-        }
-    }
-    if (tmp == "PASS")
-        tmp = line.substr(start, line.size());
-    cout << "###=>" << tmp << "<=###" << pass << endl;
-    return tmp == pass;
-}
+    while (std::getline(stream, line))
+        lines.push_back(line);
 
-void    Client::initClient(std::string const & line)
-{
-    int         start = 0;
-    std::string tmp;
-
-    for (int i = 0; line[i]; i++)
-    {
-        if (line[i] == ' ')
-        {
-            tmp = line.substr(start, i);
-            start = i + 1;
-            break ;
-        }
-    }
-    if (tmp == "NICK")
-    {
-        tmp = line.substr(start, line.size());
-        this->setNick(tmp);
-    }
-    else if (tmp == "USER" && !this->_nick.empty())
-    {
-        tmp = line.substr(start, line.size());
-        this->setUser(tmp);
-    }
-    return ;
-}
-
-void    Client::newClient(std::string const & msg, std::string const & pass)
-{
-    int     start = 0;
-    string  tmp;
-
-    for (int i = 0; msg[i]; i++)
-    {
-        if (msg[i] == '\n' || msg[i] == '\r')
-        {
-            tmp = msg.substr(start, i);
-            if (checkPass(tmp, pass) == true)
-                this->setIsNew(false);
-            else if (this->_isNew == false)
-                initClient(tmp);
-            start = i + 1;
-        }
-    }
-    if (tmp.empty() || this->getIsNew() == false)
-    {
-        tmp = msg.substr(start, msg.size());
-        initClient(tmp);
-    }
+    for (unsigned long i = 0; i < lines.size(); i++)
+        manageCmd(lines[i], Server, fd);
 }
