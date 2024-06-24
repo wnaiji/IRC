@@ -42,6 +42,8 @@ void    manageCmd(std::string const & line, Server & Server, int const & fd)
     {
         cmd = line.substr(0, pos);
         msg = line.substr(pos + 1, std::string::npos);
+        if (msg[msg.size() - 1] == '\r' || msg[msg.size() - 1] == '\n')
+            msg.erase(msg.size() - 1);
     }
     else
         cmd = line;

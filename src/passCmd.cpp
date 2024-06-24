@@ -22,6 +22,7 @@ void    capCmd(std::string const & pMsg, Server & Server, int const & fd)
 
 /*## This is PASS order management ##*/
 
+
 void    passCmd(std::string const & msg, Server & Server, int const & fd)
 {
     if (!msg.empty())
@@ -103,38 +104,20 @@ void    userCmd(std::string const & msg, Server & Server, int const & fd)
 
 void    pingCmd(std::string const & pMsg, int const & fd)
 {
-    size_t      pos = pMsg.find(':');
-    std::string cmd;
-    std::string arg;
-
-    if (pos != std::string::npos)
+    if (!pMsg.empty())
     {
-        cmd = pMsg.substr(0, pos + 1);
-        arg = pMsg.substr(pos, std::string::npos);
-    }
-    if (cmd == "PING :" && !arg.empty())
-    {
-        std::string msg = "PONG " + arg + "\r\n";
+        std::string msg = "PONG " + pMsg + "\r\n";
         send(fd, msg.c_str(), msg.size(), 0);
     }
-    else if (arg.empty())
+    else
         SendMsg::ERR_NEEDMOREPARAMS("PING", fd);
 }
 
-/*## This is PING order management ##*/
+/*## This is PONG order management ##*/
 
 void    pongCmd(std::string const & pMsg, Server & Server,int const & fd)
 {
-    size_t      pos = pMsg.find(':');
-    std::string cmd;
-    std::string arg;
-
-   if (pos != std::string::npos)
-    {
-        cmd = pMsg.substr(0, pos + 1);
-        arg = pMsg.substr(pos, std::string::npos);
-    }
-    if (cmd == "PONG :" && (arg.empty() || arg != Server.getPingMsg()))
+    if (pMsg.empty() || pMsg != Server.getPingMsg())
         Server._clients.erase(fd);
     else
         Server._clients[fd].setWaitingForPong(true);

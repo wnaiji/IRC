@@ -48,7 +48,7 @@ void    Server::init(void)
         close(this->_fd_epoll);
         throw std::runtime_error("Error: Server::init: epoll_ctl()");        
     }
-    this->startPingLoop();
+    //this->startPingLoop();
 }
 
 void    Server::run(void)
@@ -90,7 +90,7 @@ void    Server::run(void)
                 if (bytes_read <= 0)
                     this->_clients.erase(events[i].data.fd);
                 else if (bytes_read == READ_BUFFER_SIZE)
-                    cerr << "<client> :Input line was too long" << endl;
+                    cerr << "<client> :Input line was too long" << endl; //ERR_INPUTTOOLONG
                 else if (bytes_read != 0)
                 {
                     read_buffer[bytes_read] = '\0';
@@ -129,6 +129,8 @@ void    Server::sendPing(void)
         it->second.setWaitingForPong(false);
     }
     sleep(60);
+    if (it == this->_clients.end())
+        return ;
     for (it = this->_clients.begin(); it != this->_clients.end(); it++)
     {
         if (it->second.getWaitingForPong() == false)

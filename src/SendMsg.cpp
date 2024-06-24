@@ -20,7 +20,7 @@ void    SendMsg::CAP(int const & index, int const & fd)
 
 void    SendMsg::RPL_WELCOME(Server & Server, int const & fd)
 {
-    std::string msg = ":42serv 001 " + Server._clients[fd].getNick() + " :Welcome to the 42serv Network, " + Server._clients[fd].getNick() + "\r\n";
+    std::string msg = ":42serv 001 " + Server._clients[fd].getNick() + " :Welcome to the Internet Relay Network, " + Server._clients[fd].getNick() + "!" + Server._clients[fd].getUser() + "@" + Server._clients[fd].getUser() + "\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
     return ;
 }
