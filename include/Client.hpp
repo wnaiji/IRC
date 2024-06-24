@@ -15,6 +15,7 @@ private:
     std::string         _user;
     struct epoll_event  _event;
     int                 _client_fd;
+    bool                _waitingForPong;
 
 private:
     void                        initClient(std::string const & line);
@@ -23,7 +24,7 @@ public:
     Client(void);
     ~Client(void);
 
-    struct sockaddr_in6 		_addr;
+    struct sockaddr_in 		_addr;
 
     bool const &                getCap(void) const;
     bool const &                getPass(void) const;
@@ -32,6 +33,7 @@ public:
     bool const &                getIsNew(void) const;
     int const &                 getFd(void) const;
     struct epoll_event const &  getEvent(void) const;
+    bool const &                getWaitingForPong(void) const;
 
     void                        setCap(void);
     void                        setPass(void);
@@ -40,8 +42,9 @@ public:
     void                        setIsNew(bool const & status);
     void                        setFd(int const & fd);
     void                        setEvent(void);
+    void                        setWaitingForPong(bool const & status);
 
-    void                        init(struct sockaddr_in6 const & addr, int const & fd);
+    void                        init(struct sockaddr_in const & addr, int const & fd);
     void                        newMsg(std::string const & msg, Server & server, int const & fd);
 };
 

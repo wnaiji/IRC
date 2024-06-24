@@ -4,14 +4,11 @@ This project is about creating your own IRC server. You will use an actual IRC c
 
 # CMD
 
-CAP
-
-PASS
-le pass doit etre gere avant nick et user pour creer le client (avec le meme client_fd)
-
-NICK
-USER
-PING
+-CAP
+-PASS
+-NICK
+-USER
+-PING
 PONG
 QUIT
 JOIN

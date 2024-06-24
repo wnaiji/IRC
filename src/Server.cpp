@@ -48,6 +48,7 @@ void    Server::init(void)
         close(this->_fd_epoll);
         throw std::runtime_error("Error: Server::init: epoll_ctl()");        
     }
+    this->startPingLoop();
 }
 
 void    Server::run(void)
@@ -67,11 +68,11 @@ void    Server::run(void)
         {
             if (events[i].data.fd == this->_fd_socket)
             {
-                struct sockaddr_in6 			clientAddr;
+                struct sockaddr_in 			clientAddr;
                 socklen_t   addr_len = sizeof(clientAddr);
-                client_fd = accept(this->_fd_socket, reinterpret_cast<t_sockaddr *>(&clientAddr), &addr_len);
+                client_fd = accept(this->_fd_socket, (struct sockaddr *)&clientAddr, &addr_len);
                 if (client_fd == -1 || client_fd == 0)
-                    cerr << "Error: Server::run: accept()" << endl;
+                    cerr << "Error: Server::run: accept(): " << strerror(errno) << std::endl;
                 else
                 {
                     cout << "new connection client_fd: " << client_fd << endl;
@@ -94,24 +95,14 @@ void    Server::run(void)
                 {
                     read_buffer[bytes_read] = '\0';
                     string msg(read_buffer);
-                    size_t last_find = 0;
-                    for (size_t j = 0; j < msg.length(); j++)
-                    {
-                        if (msg[j] == '\r' || msg[j] == '\n')
-                        {   
-                            this->_clients[events[i].data.fd].newMsg(msg, *this, events[i].data.fd);
-                            cout << "=====> " << events[i].data.fd << endl;
-                            cout << "=====> " << this->_clients[events[i].data.fd].getNick() << endl;
-                            cout << "=====> " << this->_clients[events[i].data.fd].getUser() << endl;
-                        }
-                    }
-                    if (last_find < msg.length())
-                        this->_clients[events[i].data.fd].newMsg(msg, *this, events[i].data.fd);
+
+                    this->_clients[events[i].data.fd].newMsg(msg, *this, events[i].data.fd);
+                    cout << "=====> " << events[i].data.fd << endl;
+                    cout << "=====> " << this->_clients[events[i].data.fd].getNick() << endl;
+                    cout << "=====> " << this->_clients[events[i].data.fd].getUser() << endl;
                 }
                 else
                     cout << "bytes_read == 0 to see " << bytes_read << endl;
-
-                cout << "read : " << endl << ">>'" << read_buffer << "'<<" << endl;
             }
         }
     }
@@ -126,6 +117,42 @@ Server::~Server(void)
     return ;
 }
 
+void    Server::sendPing(void)
+{
+    std::map<int, Client>::iterator it;
+    std::string                     msg = "42serv_4428";
+
+    this->_pingMsg = msg;
+    for (it = this->_clients.begin(); it != this->_clients.end(); it++)
+    {
+        SendMsg::PING(msg, it->second.getFd());
+        it->second.setWaitingForPong(false);
+    }
+    sleep(60);
+    for (it = this->_clients.begin(); it != this->_clients.end(); it++)
+    {
+        if (it->second.getWaitingForPong() == false)
+            this->_clients.erase(it->second.getFd());
+    }
+}
+
+void*   timeoutCheckerThread(void* arg) {
+    Server* server = static_cast<Server*>(arg);
+    while (true) {
+        sleep(60);
+        server->sendPing();
+    }
+    return NULL;
+}
+
+void    Server::startPingLoop(void)
+{
+    pthread_t thread;
+    pthread_create(&thread, NULL, timeoutCheckerThread, this);
+    pthread_detach(thread);
+}
+
+
 int const & Server::getPort(void) const
 {
     return (this->_port);
@@ -134,6 +161,11 @@ int const & Server::getPort(void) const
 string const &  Server::getPassword(void) const
 {
     return (this->_password);
+}
+
+string const &  Server::getPingMsg(void) const
+{
+    return this->_pingMsg;
 }
 
 void    Server::setPassword(string const & pNewPassword)

@@ -50,6 +50,11 @@ struct epoll_event const & Client::getEvent(void) const
     return this->_event;
 }
 
+bool const &        Client::getWaitingForPong(void) const
+{
+    return this->_waitingForPong;
+}
+
 /*---------------SETTER---------------*/
 
 void                Client::setCap(void)
@@ -84,6 +89,7 @@ void                Client::setIsNew(bool const & status)
 
 void                Client::setFd(int const & fd)
 {
+    /* enregistre le fd en type string*/
     this->_client_fd = fd;
     fcntl(this->_client_fd, F_SETFL, O_NONBLOCK);
     return ;
@@ -96,9 +102,15 @@ void                Client::setEvent(void)
     return ;
 }
 
+void                Client::setWaitingForPong(bool const & status)
+{
+    this->_waitingForPong = status;
+    return ;
+}
+
 /*--------------MANAGEMENT_CLIENTS--------------*/
 
-void    Client::init(sockaddr_in6 const & addr, int const & fd)
+void    Client::init(sockaddr_in const & addr, int const & fd)
 {
     this->_client_fd = fd;
     this->setEvent();

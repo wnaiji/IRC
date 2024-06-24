@@ -15,6 +15,7 @@
 # include <vector>
 # include <cerrno> // for strerror and global errno
 # include <cstring>
+# include <pthread.h>
 // end to see
 # include <sys/epoll.h> // for epoll_create1(), epoll_ctl(), struct epoll_event
 
@@ -46,6 +47,7 @@ class Server
 		int						_fd_socket;
 		t_sockaddr_in6 			_addr;
 		int						_fd_epoll;
+		std::string				_pingMsg;
 	private:
 		Server(void);
 		Server(Server const & pSrc);
@@ -58,9 +60,13 @@ class Server
 
 		void			init(void);
 		void			run(void);
+		void			sendPing(void);
+		void			startPingLoop(void);
 
 		int const &		getPort(void) const;
 		string const &	getPassword(void) const;
+		string const &	getPingMsg(void) const;
+
 		void			setPassword(string const & pNewPassword);
 };
 

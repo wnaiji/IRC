@@ -23,9 +23,11 @@ using std::cerr;
 using std::endl;
 
 void    manageCmd(std::string const & line, Server & Server, int const & fd);
-void    capCmd(Server & Server, int const & fd);
+void    capCmd(std::string const & msg, Server & Server, int const & fd);
 void    passCmd(std::string const & msg, Server & Server, int const & fd);
 void    nickCmd(std::string const & msg, Server & Server, int const & fd);
 void    userCmd(std::string const & msg, Server & Server, int const & fd);
+void    pingCmd(std::string const & pMsg, int const & fd);
+void    pongCmd(std::string const & pMsg, Server & Server, int const & fd);
 
 #endif
