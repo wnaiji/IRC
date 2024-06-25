@@ -71,11 +71,11 @@ void    manageCmd(std::string const & line, Server & Server, int const & fd)
                 break ;
             
             case 4:
-                pingCmd(line, fd);
+                pingCmd(msg, fd);
                 break ;
 
             case 5:
-                pongCmd(line, Server, fd);
+                pongCmd(msg, Server, fd);
                 break ;
             }
         }

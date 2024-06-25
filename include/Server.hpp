@@ -16,6 +16,8 @@
 # include <cerrno> // for strerror and global errno
 # include <cstring>
 # include <pthread.h>
+# include <csignal>
+# include <sys/wait.h>
 // end to see
 # include <sys/epoll.h> // for epoll_create1(), epoll_ctl(), struct epoll_event
 
@@ -47,11 +49,11 @@ class Server
 		int						_fd_socket;
 		t_sockaddr_in6 			_addr;
 		int						_fd_epoll;
-		std::string				_pingMsg;
+		pthread_t 				_thread;
+		std::string const		_pingMsg;
 	private:
 		Server(void);
 		Server(Server const & pSrc);
-		void		manageCmd(std::string const & pMsg, int client_fd); 
 	public:
 		Server(int const & pPort, string const & pPassword);
 		~Server(void);
@@ -61,12 +63,15 @@ class Server
 		void			init(void);
 		void			run(void);
 		void			sendPing(void);
-		void			startPingLoop(void);
+		//void			startPingLoop(void);
+		void    		disck(void);
 
 		int const &		getPort(void) const;
 		string const &	getPassword(void) const;
 		string const &	getPingMsg(void) const;
 
+
+		static void*   	timeoutCheckerThread(void* arg);
 		void			setPassword(string const & pNewPassword);
 };
 

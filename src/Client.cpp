@@ -91,7 +91,7 @@ void                Client::setFd(int const & fd)
 {
     /* enregistre le fd en type string*/
     this->_client_fd = fd;
-    fcntl(this->_client_fd, F_SETFL, O_NONBLOCK);
+    //fcntl(this->_client_fd, F_SETFL, O_NONBLOCK);
     return ;
 }
 
@@ -115,16 +115,9 @@ void    Client::init(sockaddr_in const & addr, int const & fd)
     this->_client_fd = fd;
     this->setEvent();
     this->setIsNew(true);
+    this->setWaitingForPong(true);
     this->_addr = addr;
 }
-
-    /*reception de la str entier    *
-    * pars pour recup la 1er ligne  *
-    * recup par la suite du 1er mot *
-    * check si commande valide      *
-    * continuer si tout est bon ou  *
-    * demande du mot de pass sinon  *
-    * disconnect le new client      */
 
 void    Client::newMsg(std::string const & msg, Server & Server, int const & fd)
 {

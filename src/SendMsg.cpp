@@ -2,7 +2,7 @@
 
 void    SendMsg::PING(std::string const & pMsg, int const & fd)
 {
-    std::string msg = "PING :" + pMsg + "\r\n";
+    std::string msg = "PING " + pMsg + "\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
 }
 

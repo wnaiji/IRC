@@ -49,21 +49,25 @@ puis attendre la suite des commandes
 1er CAP LS (aucune reaction)
 puis PASS <MDP>
 NICK <PSEUDO>
+    NICK:   - Pas d'espace, pas de virgule, pas de '*'
+            pas de '?', pas de '!' et pas '@'
+            - Ne dois pas commencer par '$', ':', '#' ,'&'
+            - Ne dois pas contenir de '.'
+            - etre different des Commandes.
 USER <USER>
 message de confirmation
 attente des commandes suivante
 
-nc => OK
-irssi => fail
+=> verification des flags avant accept pour la dificulter 
+    d'accetation d'un nouveau client du premier coup
 
-cration du sendMsg.cpp pour tout les messages de retour 
-les NICK de chaque client est unique, elle peut etre modifie mais le USER non
+Creation de thread qui PING tout les clients chaque minutes
+Le client aura 30 secondes pour repondre avant d'etre deconnecte
+Un messages "Penssee a PONG" sera envoyee (une partie du bonus)
+Gestion des messages de depart et des timeouts pour les clients sortant
 
-NICK:   - Pas d'espace, pas de virgule, pas de '*'
-        pas de '?', pas de '!' et pas '@'
-        - Ne dois pas commencer par '$', ':', '#' ,'&'
-        - Ne dois pas contenir de '.'
-        - etre different des Commandes.
+
+commande QUIT
 
 Channels:   - Transmet les messages a tout les clients du Channel
             - ce cree qund le 1er client le join
