@@ -9,30 +9,19 @@ This project is about creating your own IRC server. You will use an actual IRC c
 -NICK
 -USER
 -PING
-PONG
-QUIT
-JOIN
-PART
-TOPIC
-KICK
-INVITE
+-PONG
 
-    this->_FunLst["PING"] = &server::pingFun;
-    this->_FunLst["NICK"] = &server::nickFun;
-    this->_FunLst["USER"] = &server::userFun;
-    this->_FunLst["PASS"] = &server::passFun;
-    this->_FunLst["CAP"] =  &server::capFun;
-    this->_FunLst["PRIVMSG"] = &server::privmsgFun;
-    this->_FunLst["JOIN"] =  &server::joinFun;
-    this->_FunLst["MODE"] = &server::modeFun;
-    this->_FunLst["QUIT"] =  &server::quitFun;
-    this->_FunLst["PART"] = &server::partFun;
-    this->_FunLst["NOTICE"] = &server::noticeFun;
-    this->_FunLst["WHO"] = &server::whoFun;
-    this->_FunLst["WHOIS"] = &server::whoFun;
-    this->_FunLst["TOPIC"] = &server::topicFun;
-    this->_FunLst["INVITE"] = &server::inviteFun;
-    this->_FunLst["KICK"] = &server::kickFun;
+PRIVMSG
+JOIN
+MODE
+QUIT
+PART
+NOTICE
+WHO
+WHOIS
+TOPIC
+INVITE
+KICK
 
 # DOC
 

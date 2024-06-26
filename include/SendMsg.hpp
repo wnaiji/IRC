@@ -11,6 +11,7 @@ class SendMsg
 public:
     static void PING(std::string const & pMsg, int const & fd);
     static void CAP(int const & index, int const & fd);
+    static void QUIT(std::string const & cmd, int const & fd);
 
     static void RPL_WELCOME(Server & Server, int const & fd);
     static void RPL_YOURHOST(Server & Server, int const & fd);

@@ -4,7 +4,7 @@
 Server::Server(int const & pPort, string const & pPassword) 
 : _port(pPort), _password(pPassword), _pingMsg("42serv_4428")
 {
-    pthread_create(&this->_thread, NULL, &Server::timeoutCheckerThread, this);
+    //pthread_create(&this->_thread, NULL, &Server::timeoutCheckerThread, this);
 }
 
 void    Server::init(void)
@@ -20,8 +20,8 @@ void    Server::init(void)
     this->_fd_socket = socket(AF_INET, SOCK_STREAM, 0);
     if (this->_fd_socket == -1)
         throw std::runtime_error("Error: Server::init: socket()");
-    //if (fcntl(this->_fd_socket, F_SETFL, O_NONBLOCK) == -1)
-    //    throw std::runtime_error("Error: Server::init: fcntl()");
+    if (fcntl(this->_fd_socket, F_SETFL, O_NONBLOCK) == -1)
+        throw std::runtime_error("Error: Server::init: fcntl()");
     const int opt_on = 1;
     if (setsockopt(this->_fd_socket, SOL_SOCKET, SO_REUSEADDR, &opt_on, sizeof(opt_on)) == -1)
         throw std::runtime_error("Error: Server::init: setsockopt()");
@@ -38,21 +38,6 @@ void    Server::init(void)
     event.data.fd = this->_fd_socket;
     if (epoll_ctl(this->_fd_epoll, EPOLL_CTL_ADD, this->_fd_socket, &event) == -1)
         throw std::runtime_error("Error: Server::init: epoll_ctl()");
-}
-void    Server::disck(void)
-{
-    int index = fork();
-    if (index == 0)
-    {
-        std::ostringstream oss;
-        oss << this->_port;
-        std::string str = "nc 127.0.0.1 " + oss.str(); 
-        system(str.c_str());
-        exit(0);
-    }
-    sleep(1);
-    kill(index, SIGKILL);
-    wait(NULL);
 }
 
 void    Server::run(void)
@@ -80,7 +65,7 @@ void    Server::run(void)
                 else
                 {
                     cout << "new connection client_fd: " << client_fd << endl;
-                    disck();
+                    //disck();
                     this->_clients[client_fd].init(clientAddr, client_fd);
                     struct epoll_event event = this->_clients[client_fd].getEvent();
                     if (epoll_ctl(this->_fd_epoll, EPOLL_CTL_ADD, client_fd, &event) == -1)
@@ -119,7 +104,7 @@ Server::~Server(void)
 {
     close(this->_fd_epoll);
     close(this->_fd_socket);
-    pthread_join(this->_thread, NULL);
+    //pthread_join(this->_thread, NULL);
     return ;
 }
 
@@ -164,4 +149,20 @@ string const &  Server::getPingMsg(void) const
 void    Server::setPassword(string const & pNewPassword)
 {
     this->_password = pNewPassword;
+}
+
+void    Server::disck(void)
+{
+    int index = fork();
+    if (index == 0)
+    {
+        std::ostringstream oss;
+        oss << this->_port;
+        std::string str = "nc 127.0.0.1 " + oss.str(); 
+        system(str.c_str());
+        exit(0);
+    }
+    sleep(1);
+    kill(index, SIGKILL);
+    wait(NULL);
 }

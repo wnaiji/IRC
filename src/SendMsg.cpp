@@ -18,6 +18,12 @@ void    SendMsg::CAP(int const & index, int const & fd)
     return ;
 }
 
+void    SendMsg::QUIT(std::string const & cmd, int const & fd)
+{
+    send(fd, cmd.c_str(), cmd.size(), 0);
+    return ;
+}
+
 void    SendMsg::RPL_WELCOME(Server & Server, int const & fd)
 {
     std::string msg = ":42serv 001 " + Server._clients[fd].getNick() + " :Welcome to the Internet Relay Network, " + Server._clients[fd].getNick() + "!" + Server._clients[fd].getUser() + "@" + Server._clients[fd].getUser() + "\r\n";
@@ -86,3 +92,4 @@ void    SendMsg::ERR_ALREADYREGISTERED(int const & fd)
     send(fd, msg.c_str(), msg.size(), 0);
     return ;
 }
+

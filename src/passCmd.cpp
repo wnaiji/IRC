@@ -115,7 +115,7 @@ void    pingCmd(std::string const & pMsg, int const & fd)
 
 /*## This is PONG order management ##*/
 
-void    pongCmd(std::string const & pMsg, Server & Server,int const & fd)
+void    pongCmd(std::string const & pMsg, Server & Server, int const & fd)
 {
     std::string tmp = ':' + Server.getPingMsg();
 
@@ -125,4 +125,24 @@ void    pongCmd(std::string const & pMsg, Server & Server,int const & fd)
         Server._clients[fd].setWaitingForPong(true);
     else if (pMsg == Server.getPingMsg())
         Server._clients[fd].setWaitingForPong(true);
+}
+
+/*## This is QUIT order management ##*/
+
+void    quitCmd(std::string const & pMsg, Server & Server, int const & fd)
+{
+    std::string msg;
+
+    if (pMsg.empty())
+        msg = ":" + Server._clients[fd].getNick() + "!" + Server._clients[fd].getUser() + "@host QUIT :leaving\r\n";
+    else
+        msg = ":" + Server._clients[fd].getNick() + "!" + Server._clients[fd].getUser() + "@host QUIT :" + pMsg + "\r\n";
+    for (std::map<int, Client>::iterator it = Server._clients.begin(); it != Server._clients.end(); it++)
+    {
+        if (fd != it->second.getFd())
+            SendMsg::QUIT(msg, it->second.getFd());
+    }    
+    Server._clients.erase(fd);
+    cout << "=======>>>>>>>>" << Server._clients.size();
+    return ;
 }

@@ -58,12 +58,9 @@ USER <USER>
 message de confirmation
 attente des commandes suivante
 
-=> verification des flags avant accept pour la dificulter 
-    d'accetation d'un nouveau client du premier coup
-
 Creation de thread qui PING tout les clients chaque minutes
 Le client aura 30 secondes pour repondre avant d'etre deconnecte
-Un messages "Penssee a PONG" sera envoyee (une partie du bonus)
+Un messages "entree client sortie client" sera envoyee (une partie du bonus)
 Gestion des messages de depart et des timeouts pour les clients sortant
 
 

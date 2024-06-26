@@ -29,5 +29,6 @@ void    nickCmd(std::string const & msg, Server & Server, int const & fd);
 void    userCmd(std::string const & msg, Server & Server, int const & fd);
 void    pingCmd(std::string const & pMsg, int const & fd);
 void    pongCmd(std::string const & pMsg, Server & Server, int const & fd);
+void    quitCmd(std::string const & pMsg, Server & Server, int const & fd);
 
 #endif
