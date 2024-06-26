@@ -1,0 +1,79 @@
+#Note
+
+1- creation du server:
+
+je cree une class server dans le quel je vais pouvoir init() puis run().
+
+=> methode init() <=
+
+-creation de la socket() avec les flags AF_INET6 pour IPv6 et SOCK_STREAM pour TCP
+
+-definition des options de la socket avec setsockopt()
+    SO_REUSEADDR pour lui permettre la reutilisation de l'adresse
+
+-configuration de la socket en mode non-bloquant avec fcntl()
+    F_SETFL defini les flags du descripteur de fichier
+    O_NONBLOCK flag non-bloquant
+
+-Liaison du socket a l'adresse avec bind():
+    en utilisant la structure sockaddr_in prealablement initialise
+    
+    sin6_family = AF_INET6 -> definie la famille d'addresse a IPv6
+    sin6_port = htons(this->_port); -> converti le port dans l'ordre des octets du reseau (big endian)
+    sin6_flowinfo = 0;
+    sin6_addr = set_sin6_addr; -> fixe l'adresse a n'importe quelle adresse de machine locale
+    sin6_scope_id = 0;
+
+-Mise en ecoute du socket avec listen():
+    Met le socket en mode ecoute pour accepter les connexions entrantes
+    SOMAXCONN est le nombre maxium de connexions
+
+-creation d'un objet epoll 
+    => epoll_create1();
+    il retournera un dexcripteur de fichier pour l'ojet epoll
+    => epoll_ctl():
+    modifie les descripteurs de fichiers surveille par l'objet epoll
+    avec la structure epoll_event:
+
+    events = EPOLLIN; -> evenement d'entre a surveiller et l'adresse associee 
+    data.fd = this->_fd_socket;
+
+
+==>>>> Reprise de la suite du projet: <<<<==
+
+enregistrement du client:
+
+commancer par la reception des commandes...
+si le client est nouveau envoie d'un message de bienvenue
+puis attendre la suite des commandes
+1er CAP LS (aucune reaction)
+puis PASS <MDP>
+NICK <PSEUDO>
+    NICK:   - Pas d'espace, pas de virgule, pas de '*'
+            pas de '?', pas de '!' et pas '@'
+            - Ne dois pas commencer par '$', ':', '#' ,'&'
+            - Ne dois pas contenir de '.'
+            - etre different des Commandes.
+USER <USER>
+message de confirmation
+attente des commandes suivante
+
+Creation de thread qui PING tout les clients chaque minutes
+Le client aura 30 secondes pour repondre avant d'etre deconnecte
+Un messages "entree client sortie client" sera envoyee (une partie du bonus)
+Gestion des messages de depart et des timeouts pour les clients sortant
+
+
+commande QUIT
+
+Channels:   - Transmet les messages a tout les clients du Channel
+            - ce cree qund le 1er client le join
+            - ce supp quand le dernier client le quitte
+            - ce cree a partir de la commande JOIN #<name>
+            - ne dois contenir aucun espace est ','
+        
+    operant des channels:
+        KICK/MODE/INVITE/TOPIC
+            
+
+

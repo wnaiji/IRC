@@ -27,7 +27,7 @@ int main(int argc, char **argv)
     if (argc != 3)
     {
         cerr << "Error: main: args need to be in format './ircserv <port> <password>'" << endl;
-        return (MAIN_ERROR_ARGS);
+        return 1;
     }
     int port = get_port(argv[1]);
     if (port <= GET_PORT_ERROR_RANGE)
@@ -41,10 +41,6 @@ int main(int argc, char **argv)
     {
         cerr << e.what() << endl;
         return 1;
-    }
-    catch (...)
-    {
-        cerr << "Unknown Error" << endl;
     }
     server.run();
 }

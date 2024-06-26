@@ -12,15 +12,18 @@
 # include <arpa/inet.h>
 # include <fcntl.h>
 # include <map>
+# include <vector>
 # include <cerrno> // for strerror and global errno
 # include <cstring>
+# include <pthread.h>
+# include <csignal>
+# include <sys/wait.h>
 // end to see
 # include <sys/epoll.h> // for epoll_create1(), epoll_ctl(), struct epoll_event
 
 //fe
 # include <sstream>
 
-# include "ft_irc_error.hpp"
 # include "Client.hpp"
 
 #define MAX_EVENTS 5000
@@ -46,21 +49,29 @@ class Server
 		int						_fd_socket;
 		t_sockaddr_in6 			_addr;
 		int						_fd_epoll;
-		std::map<int, Client *>	_clients;
+		pthread_t 				_thread;
+		std::string const		_pingMsg;
 	private:
 		Server(void);
 		Server(Server const & pSrc);
-		Server &	operator=(Server const & pRhs);
-		void		manageCmd(std::string const & pMsg, std::map<int, Client *> & client, int client_fd); 
 	public:
 		Server(int const & pPort, string const & pPassword);
 		~Server(void);
+		
+		std::map<int, Client>	_clients;
 
 		void			init(void);
 		void			run(void);
+		void			sendPing(void);
+		//void			startPingLoop(void);
+		void    		disck(void);
 
 		int const &		getPort(void) const;
 		string const &	getPassword(void) const;
+		string const &	getPingMsg(void) const;
+
+
+		static void*   	timeoutCheckerThread(void* arg);
 		void			setPassword(string const & pNewPassword);
 };
 
