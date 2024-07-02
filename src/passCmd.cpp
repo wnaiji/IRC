@@ -1,11 +1,5 @@
 #include "ft_irc.hpp"
 
-/*  gestion de la commande pass et de la commande CAP                   *
-*   la commande CAP sera tout simplement mis sous forme de bool         *
-*   dans la class Client une fois passe on ira a la commande PASS       *
-*   il y aura donc un parsing pour verifier la commande PASS puis le    *
-*   mot de pass                                                         */
-
 /*## This is CAP order management ##*/
 
 void    capCmd(std::string const & pMsg, Server & Server, int const & fd)
@@ -131,6 +125,8 @@ void    pongCmd(std::string const & pMsg, Server & Server, int const & fd)
 
 void    quitCmd(std::string const & pMsg, Server & Server, int const & fd)
 {
+    /*modifier et mettre la map client en paramettre et non le server*/
+    /*check les arguments*/
     std::string msg;
 
     if (pMsg.empty())
@@ -143,6 +139,76 @@ void    quitCmd(std::string const & pMsg, Server & Server, int const & fd)
             SendMsg::QUIT(msg, it->second.getFd());
     }    
     Server._clients.erase(fd);
-    cout << "=======>>>>>>>>" << Server._clients.size();
+    return ;
+}
+
+/*## This is JOIN order management ##*/
+
+std::vector<std::string>   splitNameChannel(std::string const & line)
+{
+    std::string                 name;
+    std::vector<std::string>    nameChannels;
+
+    for (int i = 0; line[i]; i++)
+    {
+        if (line[i] == '#')
+        {
+            i++;
+            while (line[i] != ' ' && line[i] != ',' && line[i])
+                name += line[i++];
+            nameChannels.push_back(name);
+            name.clear();
+        }
+    }
+    return nameChannels;
+}
+
+void    joinCmd(std::string const & pMsg, Server & Server, int const & fd)
+{
+    std::vector<std::string>                    nameChannels;
+    std::map<std::string, Channel>::iterator    channelIt;
+
+    nameChannels = splitNameChannel(pMsg);
+
+    for (std::vector<std::string>::iterator it = nameChannels.begin(); it != nameChannels.end(); it++)
+    {
+        channelIt = Server._channels.find(*it);
+        if (channelIt == Server._channels.end())
+        {
+            Channel newChannel(*it);
+            Server._channels.insert(std::make_pair(*it, newChannel));
+            Server._channels[*it]._clients[fd] = &Server._clients[fd];
+            SendMsg::JOINS(*it, Server, fd);
+            if (Server._channels[*it].getTopic().empty())
+                SendMsg::RPL_NOTOPIC(Server._channels[*it], Server, fd);
+            else
+                SendMsg::RPL_TOPIC(Server._channels[*it], Server, fd);
+            SendMsg::RPL_NAMREPLY(Server._channels[*it], Server, fd);
+            SendMsg::RPL_ENDOFNAMES(Server._channels[*it], Server, fd);
+        }
+        else
+        {
+            Server._channels[*it]._clients[fd] = &Server._clients[fd];
+            SendMsg::JOINS(*it, Server, fd);
+            if (Server._channels[*it].getTopic().empty())
+                SendMsg::RPL_NOTOPIC(Server._channels[*it], Server, fd);
+            else
+                SendMsg::RPL_TOPIC(Server._channels[*it], Server, fd);
+            SendMsg::RPL_NAMREPLY(Server._channels[*it], Server, fd);
+            SendMsg::RPL_ENDOFNAMES(Server._channels[*it], Server, fd);
+        }
+    }
+}
+
+/*## This is TOPIC order management ##*/
+
+void    topicCmd(std::string const & pMsg, Server & Server, int const & fd)
+{
+    int         pos = pMsg.find(' ');
+    std::string channel = pMsg.substr(0, pos);
+    std::string topic = pMsg.substr(pos + 2, std::string::npos);
+
+    Server._channels[channel].setTopic(topic);
+    SendMsg::RPL_TOPIC(Server._channels[channel], Server, fd);
     return ;
 }

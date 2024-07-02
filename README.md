@@ -10,11 +10,11 @@ This project is about creating your own IRC server. You will use an actual IRC c
 -USER
 -PING
 -PONG
+-QUIT
 
 PRIVMSG
 JOIN
 MODE
-QUIT
 PART
 NOTICE
 WHO

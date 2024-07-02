@@ -16,7 +16,8 @@ SRCS			= $(addprefix $(SRC_DIR), \
 					Client.cpp \
 					SendMsg.cpp \
 					manageCmd.cpp \
-					passCmd.cpp)
+					passCmd.cpp \
+					Channel.cpp )
 
 OBJS			= $(addprefix $(OBJ_DIR), $(notdir $(SRCS:.cpp=.o)))
 
@@ -24,7 +25,8 @@ DEPS			= Makefile $(addprefix $(INC_DIR), \
 					ft_irc.hpp \
 					Server.hpp \
 					Client.hpp \
-					SendMsg.hpp)
+					SendMsg.hpp \
+					Channel.hpp )
 
 all:			$(NAME)
 

@@ -25,6 +25,7 @@
 # include <sstream>
 
 # include "Client.hpp"
+# include "Channel.hpp"
 
 #define MAX_EVENTS 5000
 #define READ_BUFFER_SIZE 512
@@ -40,6 +41,7 @@ typedef struct sockaddr		t_sockaddr;
 typedef struct epoll_event	t_epoll_event;
 
 class Client;
+class Channel;
 
 class Server
 {
@@ -58,13 +60,14 @@ class Server
 		Server(int const & pPort, string const & pPassword);
 		~Server(void);
 		
-		std::map<int, Client>	_clients;
+		std::map<int, Client>			_clients;
+		std::map<std::string, Channel>	_channels;
 
 		void			init(void);
 		void			run(void);
-		void			sendPing(void);
+		//void			sendPing(void);
 		//void			startPingLoop(void);
-		void    		disck(void);
+		//void    		disck(void);
 
 		int const &		getPort(void) const;
 		string const &	getPassword(void) const;

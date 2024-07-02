@@ -5,6 +5,7 @@
 # include <ctime>
 
 class Server;
+class Channel;
 
 class SendMsg
 {
@@ -12,11 +13,16 @@ public:
     static void PING(std::string const & pMsg, int const & fd);
     static void CAP(int const & index, int const & fd);
     static void QUIT(std::string const & cmd, int const & fd);
+    static void JOINS(std::string const & name, Server & Server, int const & fd);
 
     static void RPL_WELCOME(Server & Server, int const & fd);
     static void RPL_YOURHOST(Server & Server, int const & fd);
     static void RPL_CREATED(Server & Server, int const & fd);
     static void RPL_MYINFO(Server & Server, int const fd);
+    static void RPL_TOPIC(Channel const & Channel, Server & Server, int const & fd);
+    static void RPL_NAMREPLY(Channel const & Channel, Server & Server, int const & fd);
+    static void RPL_ENDOFNAMES(Channel const & Channel, Server & Server, int const & fd);
+    static void RPL_NOTOPIC(Channel const & Channel, Server & Server, int const & fd);
 
     static void ERR_PASSWDMISMATCH(int const & fd);
     static void ERR_NICKNAMEINUSE(std::string const & nick, int const & fd);

@@ -35,13 +35,23 @@ static bool isQuit(std::string const & cmd)
     return cmd == "QUIT";
 }
 
+static bool isJoin(std::string const & cmd)
+{
+    return cmd == "JOIN";
+}
+
+static bool isTopic(std::string const & cmd)
+{
+    return cmd == "TOPIC";
+}
+
 void    manageCmd(std::string const & line, Server & Server, int const & fd)
 {
     size_t      pos = line.find(' ');
     std::string cmd;
     std::string msg;
     bool        (*isCmd[])(std::string const &) = {isCap, isPass, isNick, isUser, isPing, \
-                                                    isPong, isQuit};
+                                                    isPong, isQuit, isJoin, isTopic};
 
     if (pos != std::string::npos)
     {
@@ -53,7 +63,7 @@ void    manageCmd(std::string const & line, Server & Server, int const & fd)
     else
         cmd = line;
 
-    for (int i = 0; i < 7; i++)
+    for (int i = 0; i < 9; i++)
     {
         if (isCmd[i](cmd) == true)
         {
@@ -85,7 +95,15 @@ void    manageCmd(std::string const & line, Server & Server, int const & fd)
                 
             case 6:
                 quitCmd(msg, Server, fd);
-                break;
+                break ;
+
+            case 7:
+                joinCmd(msg, Server, fd);
+                break ;
+
+            case 8:
+                topicCmd(msg, Server, fd);
+                break ;
             }
         }
     }

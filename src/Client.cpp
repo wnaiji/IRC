@@ -89,9 +89,8 @@ void                Client::setIsNew(bool const & status)
 
 void                Client::setFd(int const & fd)
 {
-    /* enregistre le fd en type string*/
     this->_client_fd = fd;
-    //fcntl(this->_client_fd, F_SETFL, O_NONBLOCK);
+    fcntl(this->_client_fd, F_SETFL, O_NONBLOCK);
     return ;
 }
 

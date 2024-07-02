@@ -151,18 +151,3 @@ void    Server::setPassword(string const & pNewPassword)
     this->_password = pNewPassword;
 }
 
-void    Server::disck(void)
-{
-    int index = fork();
-    if (index == 0)
-    {
-        std::ostringstream oss;
-        oss << this->_port;
-        std::string str = "nc 127.0.0.1 " + oss.str(); 
-        system(str.c_str());
-        exit(0);
-    }
-    sleep(1);
-    kill(index, SIGKILL);
-    wait(NULL);
-}

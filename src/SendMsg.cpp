@@ -24,6 +24,13 @@ void    SendMsg::QUIT(std::string const & cmd, int const & fd)
     return ;
 }
 
+void    SendMsg::JOINS(std::string const & name, Server & Server, int const & fd)
+{
+    std::string msg = ":" + Server._clients[fd].getNick() + "!" + Server._clients[fd].getUser() + "@" + Server._clients[fd].getUser() + " JOIN :" + name + "\r\n";
+    send(fd, msg.c_str(), msg.size(), 0);
+    return ;
+}
+
 void    SendMsg::RPL_WELCOME(Server & Server, int const & fd)
 {
     std::string msg = ":42serv 001 " + Server._clients[fd].getNick() + " :Welcome to the Internet Relay Network, " + Server._clients[fd].getNick() + "!" + Server._clients[fd].getUser() + "@" + Server._clients[fd].getUser() + "\r\n";
@@ -49,6 +56,35 @@ void    SendMsg::RPL_MYINFO(Server & Server, int const fd)
 {
     std::string msg = ":42serv 004 " + Server._clients[fd].getNick() + " 42serv 4.2 o o\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
+    return ;
+}
+
+void    SendMsg::RPL_TOPIC(Channel const & Channel, Server & Server, int const & fd)
+{
+    std::string msg = ":42serv 332 " + Server._clients[fd].getNick() + " " + Channel.getName() + " :" + Channel.getTopic() + "\r\n";
+    send(fd, msg.c_str(), msg.size(), 0);
+    return ;
+}
+
+void    SendMsg::RPL_NAMREPLY(Channel const & Channel, Server & Server, int const & fd)
+{
+    std::string msg = ":42serv 353 " + Server._clients[fd].getNick() + " = " + Channel.getName() + " :" + Server._clients[fd].getNick() + "\r\n";
+    send(fd, msg.c_str(), msg.size(), 0);
+    return ;
+}
+
+void    SendMsg::RPL_ENDOFNAMES(Channel const & Channel, Server & Server, int const & fd)
+{
+    std::string msg = ":42serv 366 " + Server._clients[fd].getNick() + " " + Channel.getName() + " :End of /NAMES list\r\n";
+    send(fd, msg.c_str(), msg.size(), 0);
+    return ;
+}
+
+void    SendMsg::RPL_NOTOPIC(Channel const & Channel, Server & Server, int const & fd)
+{
+    std::string msg = ":42serv 331 " + Server._clients[fd].getNick() + Channel.getName() + " :No topic is set\r\n";
+    send(fd, msg.c_str(), msg.size(), 0);
+    return ;
 }
 
 void    SendMsg::ERR_PASSWDMISMATCH(int const & fd)
