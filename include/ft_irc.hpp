@@ -32,5 +32,6 @@ void    pongCmd(std::string const & pMsg, Server & Server, int const & fd);
 void    quitCmd(std::string const & pMsg, Server & Server, int const & fd);
 void    joinCmd(std::string const & pMsg, Server & Server, int const & fd);
 void    topicCmd(std::string const & pMsg, Server & Server, int const & fd);
+void    privmsgCmd(std::string const & pMsg, Server & Server, int const & fd);
 
 #endif

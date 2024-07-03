@@ -30,6 +30,8 @@ public:
     static void ERR_ERRONEUSNICKNAME(std::string const & nick, int const & fd);
     static void ERR_NEEDMOREPARAMS(std::string const & cmd, int const & fd);
     static void ERR_ALREADYREGISTERED(int const & fd);
+    static void ERR_CANNOTSENDTOCHAN(std::string const & nameChan, Server & Server, int const & fd);
+    static void ERR_NOSUCHNICK(std::string const & client, Server & Server, int const & fd);
 };
 
 #endif

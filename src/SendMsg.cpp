@@ -129,3 +129,16 @@ void    SendMsg::ERR_ALREADYREGISTERED(int const & fd)
     return ;
 }
 
+void    SendMsg::ERR_CANNOTSENDTOCHAN(std::string const & nameChan, Server & Server, int const & fd)
+{
+    std::string msg = ":42serv 404 " + Server._clients[fd].getNick() + " " + nameChan + " :Cannot send to channel\r\n";
+    send(fd, msg.c_str(), msg.size(), 0);
+    return ;
+}
+
+void    SendMsg::ERR_NOSUCHNICK(std::string const & client, Server & Server, int const & fd)
+{
+    std::string msg = ":42serv 401 " + Server._clients[fd].getNick() + " " + client + " :No such nick/channel\r\n";
+    send(fd, msg.c_str(), msg.size(), 0);
+    return ;
+}
