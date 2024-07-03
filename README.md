@@ -11,15 +11,15 @@ This project is about creating your own IRC server. You will use an actual IRC c
 -PING
 -PONG
 -QUIT
+-TOPIC check avec nc
+-PRIVMSG
+-JOIN
 
-PRIVMSG
-JOIN
 MODE
 PART
 NOTICE
 WHO
 WHOIS
-TOPIC
 INVITE
 KICK
 

@@ -243,8 +243,8 @@ std::vector<std::string>   splitDest(std::string const & line)
 void    sendChannel(std::string pMsg, std::string & chan, Server & Server, int const & fd)
 {
     bool    ok = false;
-    pMsg = ":" + Server._clients[fd].getNick() + "!~" + Server._clients[fd].getUser() + "@" + Server._clients[fd].getUser() + " PRIVMSG " + chan + " " + pMsg;
-    
+    std::string msg = ":" + Server._clients[fd].getNick() + "!" + Server._clients[fd].getNick() + "@" + Server._clients[fd].getNick() + " PRIVMSG " + chan + " :" + pMsg;
+
     for (std::map<int, Client *>::iterator it = Server._channels[chan]._clients.begin(); it != Server._channels[chan]._clients.end(); it++)
     {
         if (it->second->getNick() == Server._clients[fd].getNick())
@@ -255,7 +255,10 @@ void    sendChannel(std::string pMsg, std::string & chan, Server & Server, int c
     else
     {
         for (std::map<int, Client *>::iterator it = Server._channels[chan]._clients.begin(); it != Server._channels[chan]._clients.end(); it++)
-            send(it->first, pMsg.c_str(), pMsg.size(), 0);
+        {
+            if (it->first != fd)
+                send(it->second->getFd(), msg.c_str(), msg.size(), 0);
+        }
     }
     return ;
 }
@@ -263,7 +266,7 @@ void    sendChannel(std::string pMsg, std::string & chan, Server & Server, int c
 void    sendClient(std::string pMsg, std::string & client, Server & Server, int const & fd)
 {
     bool    ok = false;
-    pMsg = ":" + Server._clients[fd].getNick() + "!~" + Server._clients[fd].getUser() + "@" + Server._clients[fd].getUser() + " PRIVMSG " + client + " " + pMsg;
+    pMsg = ":" + Server._clients[fd].getNick() + "!" + Server._clients[fd].getNick() + "@" + Server._clients[fd].getNick() + " PRIVMSG " + client + " :" + pMsg;
 
     for (std::map<int, Client>::iterator it = Server._clients.begin(); it != Server._clients.end(); it++)
     {
@@ -285,6 +288,7 @@ void    privmsgCmd(std::string const & pMsg, Server & Server, int const & fd)
     std::string                 msg = pMsg.substr(pos + 1, std::string::npos) + "\r\n";
     std::vector<std::string>    listDest = splitDest(dest);
 
+    std::cout << "######## " << pMsg << std::endl;
     for (std::vector<string>::iterator it = listDest.begin(); it != listDest.end(); it++)
     {
         if ((*it)[0] == '#')
