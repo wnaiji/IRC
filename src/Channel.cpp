@@ -25,8 +25,19 @@ std::string const & Channel::getTopic(void) const
     return this->_topic;
 }
 
+std::string const & Channel::getNameAdmin(void) const
+{
+    return this->_nameAdmin;
+}
+
 void    Channel::setTopic(std::string const & topic)
 {
     this->_topic = topic;
+    return ;
+}
+
+void    Channel::setNameAdmin(std::string const & nameAdmin)
+{
+    this->_nameAdmin = nameAdmin;
     return ;
 }

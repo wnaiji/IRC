@@ -32,6 +32,9 @@ public:
     static void ERR_ALREADYREGISTERED(int const & fd);
     static void ERR_CANNOTSENDTOCHAN(std::string const & nameChan, Server & Server, int const & fd);
     static void ERR_NOSUCHNICK(std::string const & client, Server & Server, int const & fd);
+    static void ERR_NOSUCHCHANNEL(std::string const & channel, Server & Server, int const & fd);
+    static void ERR_NOTONCHANNEL(std::string const & channel, Server & Server, int const & fd);
+    static void ERR_CHANOPRIVSNEEDED(std::string const & channel, Server & Server, int const & fd);
 };
 
 #endif

@@ -98,9 +98,14 @@ void    userCmd(std::string const & msg, Server & Server, int const & fd)
 
 void    pingCmd(std::string const & pMsg, int const & fd)
 {
+    std::string msg;
+
     if (!pMsg.empty())
     {
-        std::string msg = "PONG " + pMsg + "\r\n";
+        if (pMsg.find(':') != std::string::npos)
+            msg = "PONG " + pMsg + "\r\n";
+        else
+            msg = "PONG :" + pMsg + "\r\n";
         send(fd, msg.c_str(), msg.size(), 0);
     }
     else
@@ -125,14 +130,12 @@ void    pongCmd(std::string const & pMsg, Server & Server, int const & fd)
 
 void    quitCmd(std::string const & pMsg, Server & Server, int const & fd)
 {
-    /*modifier et mettre la map client en paramettre et non le server*/
-    /*check les arguments*/
     std::string msg;
 
     if (pMsg.empty())
-        msg = ":" + Server._clients[fd].getNick() + "!" + Server._clients[fd].getUser() + "@host QUIT :leaving\r\n";
+        msg = ":" + Server._clients[fd].getNick() + "!" + Server._clients[fd].getNick() + "@host QUIT :leaving\r\n";
     else
-        msg = ":" + Server._clients[fd].getNick() + "!" + Server._clients[fd].getUser() + "@host QUIT :" + pMsg + "\r\n";
+        msg = ":" + Server._clients[fd].getNick() + "!" + Server._clients[fd].getNick() + "@host QUIT " + pMsg + "\r\n";
     for (std::map<int, Client>::iterator it = Server._clients.begin(); it != Server._clients.end(); it++)
     {
         if (fd != it->second.getFd())
@@ -175,6 +178,7 @@ void    joinCmd(std::string const & pMsg, Server & Server, int const & fd)
         if (channelIt == Server._channels.end())
         {
             Channel newChannel(*it);
+            newChannel.setNameAdmin(Server._clients[fd].getNick());
             Server._channels.insert(std::make_pair(*it, newChannel));
             Server._channels[*it]._clients[fd] = &Server._clients[fd];
             SendMsg::JOINS(*it, Server, fd);
@@ -207,9 +211,20 @@ void    topicCmd(std::string const & pMsg, Server & Server, int const & fd)
     std::string channel = pMsg.substr(0, pos);
     std::string topic = pMsg.substr(pos + 2, std::string::npos);
 
-    Server._channels[channel].setTopic(topic);
-    //envoie du topic q tout les clients du channel
-    SendMsg::RPL_TOPIC(Server._channels[channel], Server, fd);
+    if (channel.empty())
+        SendMsg::ERR_NEEDMOREPARAMS("TOPIC", fd);
+    else if (Server._channels.find(channel) == Server._channels.end())
+        SendMsg::ERR_NOSUCHCHANNEL(channel, Server, fd);
+    else if (Server._channels[channel]._clients.find(fd) == Server._channels[channel]._clients.end())
+        SendMsg::ERR_NOTONCHANNEL(channel, Server, fd);
+    else if (Server._channels[channel].getNameAdmin() != Server._clients[fd].getNick())
+        SendMsg::ERR_CHANOPRIVSNEEDED(channel, Server, fd);
+    else
+    {
+        Server._channels[channel].setTopic(topic);
+        for (std::map<int, Client *>::iterator it = Server._channels[channel]._clients.begin(); it != Server._channels[channel]._clients.end(); it++)
+            SendMsg::RPL_TOPIC(Server._channels[channel], Server, it->first);
+    }
     return ;
 }
 
@@ -288,7 +303,6 @@ void    privmsgCmd(std::string const & pMsg, Server & Server, int const & fd)
     std::string                 msg = pMsg.substr(pos + 1, std::string::npos) + "\r\n";
     std::vector<std::string>    listDest = splitDest(dest);
 
-    std::cout << "######## " << pMsg << std::endl;
     for (std::vector<string>::iterator it = listDest.begin(); it != listDest.end(); it++)
     {
         if ((*it)[0] == '#')

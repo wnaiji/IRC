@@ -57,7 +57,7 @@ void    manageCmd(std::string const & line, Server & Server, int const & fd)
     std::string msg;
     bool        (*isCmd[])(std::string const &) = {isCap, isPass, isNick, isUser, isPing, \
                                                     isPong, isQuit, isJoin, isTopic, isPrivmsg};
-
+    std::cout << line << std::endl;
     if (pos != std::string::npos)
     {
         cmd = line.substr(0, pos);
@@ -67,7 +67,7 @@ void    manageCmd(std::string const & line, Server & Server, int const & fd)
     }
     else
         cmd = line;
-
+    std::cout << "1111111111111" << std::endl;
     for (int i = 0; i < 10; i++)
     {
         if (isCmd[i](cmd) == true)

@@ -4,24 +4,26 @@ This project is about creating your own IRC server. You will use an actual IRC c
 
 # CMD
 
--CAP
--PASS
--NICK
--USER
--PING
--PONG
--QUIT
--TOPIC check avec nc
+-CAP => OK
+-PASS => OK
+-NICK => OK
+-USER => OK
+-PING => OK
+-PONG => OK
+-QUIT => OK
+-TOPIC => tester TOPIC avec nc et irssi
+-JOIN => -le nombre de client dans le channel
 -PRIVMSG
--JOIN
-
+        verifier pour toute les commande si le client est bien enregistre
+   # Reprendre a partir de MODE est adapter le code en fonction de 
 MODE
 PART
+INVITE
+KICK
+
 NOTICE
 WHO
 WHOIS
-INVITE
-KICK
 
 # DOC
 

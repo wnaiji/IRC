@@ -142,3 +142,23 @@ void    SendMsg::ERR_NOSUCHNICK(std::string const & client, Server & Server, int
     send(fd, msg.c_str(), msg.size(), 0);
     return ;
 }
+
+void    SendMsg::ERR_NOSUCHCHANNEL(std::string const & channel, Server & Server, int const & fd)
+{
+    std::string msg = ":42serv 403 " + Server._clients[fd].getNick() + " " + channel + " :No such channel\r\n";
+    send(fd, msg.c_str(), msg.size(), 0);
+    return ;
+}
+
+void    SendMsg::ERR_NOTONCHANNEL(std::string const & channel, Server & Server, int const & fd)
+{
+    std::string msg = ":42serv 442 " + Server._clients[fd].getNick() + " " + channel + " :You're not on that channel\r\n";
+    send(fd, msg.c_str(), msg.size(), 0);
+    return ;
+}
+void    SendMsg::ERR_CHANOPRIVSNEEDED(std::string const & channel, Server & Server, int const & fd)
+{
+    std::string msg = ":42serv 482 " + Server._clients[fd].getNick() + " " + channel + " :You're not channel operator\r\n";
+    send(fd, msg.c_str(), msg.size(), 0);
+    return ;
+}
