@@ -50,13 +50,19 @@ static bool isPrivmsg(std::string const & cmd)
     return cmd == "PRIVMSG";
 }
 
+static bool isMode(std::string const & cmd)
+{
+    return cmd == "MODE";
+}
+
 void    manageCmd(std::string const & line, Server & Server, int const & fd)
 {
     size_t      pos = line.find(' ');
     std::string cmd;
     std::string msg;
     bool        (*isCmd[])(std::string const &) = {isCap, isPass, isNick, isUser, isPing, \
-                                                    isPong, isQuit, isJoin, isTopic, isPrivmsg};
+                                                    isPong, isQuit, isJoin, isTopic, isPrivmsg, \
+                                                    isMode};
     std::cout << line << std::endl;
     if (pos != std::string::npos)
     {
@@ -67,8 +73,8 @@ void    manageCmd(std::string const & line, Server & Server, int const & fd)
     }
     else
         cmd = line;
-    std::cout << "1111111111111" << std::endl;
-    for (int i = 0; i < 10; i++)
+
+    for (int i = 0; i < 11; i++)
     {
         if (isCmd[i](cmd) == true)
         {
@@ -112,6 +118,10 @@ void    manageCmd(std::string const & line, Server & Server, int const & fd)
 
             case 9:
                 privmsgCmd(msg, Server, fd);
+                break ;
+
+            case 10:
+                modeCmd(msg, Server, fd);
                 break ;
             }
         }

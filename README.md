@@ -10,9 +10,12 @@ This project is about creating your own IRC server. You will use an actual IRC c
 -USER => OK
 -PING => OK
 -PONG => OK
--QUIT => OK
+-QUIT => OK => sortir les client de chan
 -TOPIC => tester TOPIC avec nc et irssi
--JOIN => -le nombre de client dans le channel
+-JOIN =>        -le nombre de client dans le channel
+                -etablir le mode a la creation
+                -faire un vecter<string> de nameAdmin
+                -3em arg => topic
 -PRIVMSG
         verifier pour toute les commande si le client est bien enregistre
    # Reprendre a partir de MODE est adapter le code en fonction de 
@@ -21,7 +24,7 @@ PART
 INVITE
 KICK
 
-NOTICE
+NO
 WHO
 WHOIS
 

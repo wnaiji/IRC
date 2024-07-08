@@ -23,6 +23,7 @@ public:
     static void RPL_NAMREPLY(Channel const & Channel, Server & Server, int const & fd);
     static void RPL_ENDOFNAMES(Channel const & Channel, Server & Server, int const & fd);
     static void RPL_NOTOPIC(Channel const & Channel, Server & Server, int const & fd);
+    static void RPL_CHANNELMODEIS(Channel const & Channel, Server & Server, int const & fd);
 
     static void ERR_PASSWDMISMATCH(int const & fd);
     static void ERR_NICKNAMEINUSE(std::string const & nick, int const & fd);

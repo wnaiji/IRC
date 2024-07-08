@@ -87,6 +87,20 @@ void    SendMsg::RPL_NOTOPIC(Channel const & Channel, Server & Server, int const
     return ;
 }
 
+void    SendMsg::RPL_CHANNELMODEIS(Channel const & Channel, Server & Server, int const & fd)
+{
+    std::string msg = "42serv 324 " + Server._clients[fd].getNick() + " " + Channel.getName() + " +n";
+
+    if (Channel.getInviteStatus() == true)
+        msg += "i";
+    if (Channel.getTopicStatus() == true)
+        msg += "t";
+    if (Channel.getKeyStatus() == true)
+        msg += "k";
+    msg += "\r\n";
+    send(fd, msg.c_str(), msg.size(), 0);
+}
+
 void    SendMsg::ERR_PASSWDMISMATCH(int const & fd)
 {
     std::string msg = ":42serv 464 <client> :Password incorrect\r\n";
