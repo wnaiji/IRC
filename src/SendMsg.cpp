@@ -26,8 +26,9 @@ void    SendMsg::QUIT(std::string const & cmd, int const & fd)
 
 void    SendMsg::JOINS(std::string const & name, Server & Server, int const & fd)
 {
-    std::string msg = ":" + Server._clients[fd].getNick() + "!" + Server._clients[fd].getUser() + "@" + Server._clients[fd].getUser() + " JOIN :" + name + "\r\n";
-    send(fd, msg.c_str(), msg.size(), 0);
+    std::string msg = ":" + Server._clients[fd].getNick() + "!" + Server._clients[fd].getNick() + "@" + Server._clients[fd].getNick() + " JOIN :" + name + "\r\n";
+    for (std::map<int, Client *>::iterator it = Server._channels[name]._clients.begin(); it != Server._channels[name]._clients.end(); it++)
+        send(it->first, msg.c_str(), msg.size(), 0);
     return ;
 }
 
@@ -66,9 +67,28 @@ void    SendMsg::RPL_TOPIC(Channel const & Channel, Server & Server, int const &
     return ;
 }
 
+bool    findNameAdmin(std::string const & name, std::vector<std::string> const & list)
+{
+    for (std::vector<std::string>::const_iterator it = list.begin(); it != list.end(); it++)
+    {
+        if (*it == name)
+            return true;
+    }
+    return false;
+}
+
 void    SendMsg::RPL_NAMREPLY(Channel const & Channel, Server & Server, int const & fd)
 {
-    std::string msg = ":42serv 353 " + Server._clients[fd].getNick() + " = " + Channel.getName() + " :" + Server._clients[fd].getNick() + "\r\n";
+    std::string nameClient;
+    for (std::map<int, Client *>::const_iterator it = Channel._clients.begin(); it != Channel._clients.end(); it++)
+    {
+        if (!nameClient.empty())
+            nameClient += " ";
+        if (findNameAdmin(it->second->getNick(), Channel.getNameAdmin()))
+            nameClient += "@";
+        nameClient += it->second->getNick();
+    }
+    std::string msg = ":42serv 353 " + Server._clients[fd].getNick() + " = " + Channel.getName() + " :" + nameClient + "\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
     return ;
 }
@@ -89,7 +109,7 @@ void    SendMsg::RPL_NOTOPIC(Channel const & Channel, Server & Server, int const
 
 void    SendMsg::RPL_CHANNELMODEIS(Channel const & Channel, Server & Server, int const & fd)
 {
-    std::string msg = "42serv 324 " + Server._clients[fd].getNick() + " " + Channel.getName() + " +n";
+    std::string msg = ":42serv 324 " + Server._clients[fd].getNick() + " " + Channel.getName() + " +n";
 
     if (Channel.getInviteStatus() == true)
         msg += "i";
@@ -98,6 +118,7 @@ void    SendMsg::RPL_CHANNELMODEIS(Channel const & Channel, Server & Server, int
     if (Channel.getKeyStatus() == true)
         msg += "k";
     msg += "\r\n";
+    std::cout << msg << std::endl;
     send(fd, msg.c_str(), msg.size(), 0);
 }
 

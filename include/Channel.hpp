@@ -47,6 +47,7 @@ public:
 
     void                                addMode(char const & mode, std::string const & arg, Server & server, int const & fd);
     void                                removeMode(char const & mode, std::string const & arg, Server & Server, int const & fd);
+    void                                sendMsg(std::string & msg, std::string mode, std::string param);
 };
 
 

@@ -57,18 +57,46 @@ static bool notValidNick(std::string const & nick)
     return false;
 }
 
-void    nickCmd(std::string const & msg, Server & Server, int const & fd)
+void    sendToUserChan(std::string const & pMsg, Server & Server, int const & fd)
+{
+    for (std::map<std::string, Channel>::iterator it = Server._channels.begin(); it != Server._channels.end(); it++)
+    {
+        for (std::map<int, Client *>::iterator it2 = it->second._clients.begin(); it2 != it->second._clients.end(); it2++)
+        {
+            if (Server._clients[fd].getNick() == it2->second->getNick())
+            {
+                for (it2 = it->second._clients.begin(); it2 != it->second._clients.end(); it2++)
+                {
+                        std::string msg = ":" + Server._clients[fd].getNick() + "!~" + it2->second->getNick() + "@localhost NICK :" + pMsg + "\r\n";
+                        send(it2->second->getFd(), msg.c_str(), msg.size(), 0);
+                }
+                break ;
+            }
+        }
+    }
+}
+
+void    nickCmd(std::string const & pMsg, Server & Server, int const & fd)
 {
     if (Server._clients[fd].getPass() == false)
         SendMsg::ERR_ALREADYREGISTERED(fd);
-    else if (!msg.empty())
+    else if (Server._clients[fd].getNick().empty() && !pMsg.empty())
     {
-        if (inUseNickName(msg, Server) == true)
-            SendMsg::ERR_NICKNAMEINUSE(msg, fd);
-        else if (notValidNick(msg) == true)
-            SendMsg::ERR_ERRONEUSNICKNAME(msg, fd);
+        if (inUseNickName(pMsg, Server) == true)
+            SendMsg::ERR_NICKNAMEINUSE(pMsg, fd);
+        else if (notValidNick(pMsg) == true)
+            SendMsg::ERR_ERRONEUSNICKNAME(pMsg, fd);
         else
-            Server._clients[fd].setNick(msg);
+            Server._clients[fd].setNick(pMsg);
+    }
+    else if (inUseNickName(pMsg, Server) == true)
+        SendMsg::ERR_NICKNAMEINUSE(pMsg, fd);
+    else if (notValidNick(pMsg) == true)
+        SendMsg::ERR_ERRONEUSNICKNAME(pMsg, fd);
+    else if (!pMsg.empty())
+    {
+        sendToUserChan(pMsg, Server, fd);
+        Server._clients[fd].setNick(pMsg);
     }
     else
         SendMsg::ERR_NONICKNAMEGIVEN(fd);
@@ -140,7 +168,7 @@ void    quitCmd(std::string const & pMsg, Server & Server, int const & fd)
     {
         if (fd != it->second.getFd())
             SendMsg::QUIT(msg, it->second.getFd());
-    }    
+    }
     Server._clients.erase(fd);
     return ;
 }
@@ -301,8 +329,8 @@ void    sendClient(std::string pMsg, std::string & client, Server & Server, int 
             ok = true;
         }
     }
-    if (!ok)
-        SendMsg::ERR_NOSUCHNICK(client, Server, fd);
+    //if (!ok)
+    //    SendMsg::ERR_NOSUCHNICK(client, Server, fd);
     return ;
 }
 
@@ -341,8 +369,6 @@ std::vector<std::string>   splitArg(std::string const & mode, std::string const 
     std::vector<std::string>    listDest;
     int                         j = 0;
 
-    std::cout << "33333333333333333333333" << std::endl;
-
     for (int i = 0; mode[i]; i++)
     {
         if (mode[i] != '+' && mode[i] != '-')
@@ -353,8 +379,6 @@ std::vector<std::string>   splitArg(std::string const & mode, std::string const 
             {
                 while (line[j] != ' ' && line[j])
                     dest += line[j++];
-
-                std::cout << "##########" << dest << "#" <<std::endl;
                 listDest.push_back(dest);
                 dest.clear();
             }
@@ -367,7 +391,6 @@ std::vector<std::string>   splitArg(std::string const & mode, std::string const 
             i += 2;
         }
     }
-    std::cout << "============" << listDest.size() << "=" << std::endl;
     return listDest;
 }
 
@@ -377,7 +400,6 @@ void    handleModeCommand(std::string const & pMode, std::string const & channel
     unsigned long               pos = pMode.find(' ');
     std::string                 mode = pMode.substr(0, pos);
     std::string                 line;
-    std::cout << "222222222222222222222" << std::endl;
 
     if (pos != std::string::npos)
         line = pMode.substr(pos + 1, std::string::npos);
@@ -410,28 +432,12 @@ void    modeCmd(std::string const & pMsg, Server & Server, int const & fd)
     if (pos != std::string::npos)
         mode = pMsg.substr(pos + 1, std::string::npos);
 
-    std::cout << "1111111111111111111111" << channel << std::endl;
-
     if (Server._channels.find(channel) == Server._channels.end())
-    {
-        cout << "aaaaaaaaaaaaaaaa" << endl;
         SendMsg::ERR_NOSUCHCHANNEL(channel, Server, fd);
-    }
     else if (pMsg.size() == channel.size())
-    {
-        cout << "bbbbbbbbbbbbbbbb" << endl;
-        SendMsg::RPL_CHANNELMODEIS(Server._channels[channel].getName(), Server, fd);
-    }
+        SendMsg::RPL_CHANNELMODEIS(Server._channels[channel], Server, fd);
     else if (privileges(channel, Server, fd) == false)
-    {
-        cout << "cccccccccccccccc" << endl;
         SendMsg::ERR_CHANOPRIVSNEEDED(channel, Server, fd);
-    }
     else
-    {
-        cout << "dddddddddddddddd" << endl;
         handleModeCommand(mode, channel, Server, fd);
-    }
-    std::cout << "ppppppppppppppp" << endl;
-
 }

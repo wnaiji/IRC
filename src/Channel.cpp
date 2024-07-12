@@ -152,67 +152,76 @@ void    Channel::setLimit(std::string const & pLimit)
     return ;
 }
 
+void    Channel::sendMsg(std::string & msg, std::string mode, std::string param)
+{
+    msg += mode;
+    if (!param.empty())
+        msg += " " + param;
+    msg += "\r\n";
+    for (std::map<int, Client *>::iterator it = this->_clients.begin(); it != this->_clients.end(); it++)
+        send(it->first, msg.c_str(), msg.size(), 0);
+    return ;
+}
+
 void    Channel::addMode(char const & mode, std::string const & pArg, Server & Server, int const & fd)
 {
-    (void)Server;
-    (void)fd;
+    std::string msg = ":" + Server._clients[fd].getNick() + " MODE " + this->_name + " ";
     if (mode == 'i')
     {
         this->_inviteStatus = true;
-        //send message
+        sendMsg(msg, "+i", "");
     }
     else if (mode == 't')
     {
         this->_topicStatus = true;
-        //send message
+        sendMsg(msg, "+t", "");
     }
     else if (mode == 'k')
     {
         this->_keyStatus = true;
         this->setPassWord(pArg);
-        //send message
+        sendMsg(msg, "+k", pArg);
     }
     else if (mode == 'o')
     {
         this->setNameAdmin("+o", pArg);
-        //send message
+        sendMsg(msg, "+o", pArg);
     }
     else if (mode == 'l')
     {
         this->setLimit(pArg);
-        //sendMessage
+        sendMsg(msg, "+l", pArg);
     }
 }
 
 void    Channel::removeMode(char const & mode, std::string const & pArg, Server & Server, int const & fd)
 {
-    (void)Server;
-    (void)fd;
+    std::string msg = ":" + Server._clients[fd].getNick() + " MODE " + this->_name + " ";
     if (mode == 'i')
     {
         this->_inviteStatus = false;
         this->_invitName.clear();
-        //send message
+        sendMsg(msg, "-i", "");
     }
     else if (mode == 't')
     {
         this->_topicStatus = false;
-        //send message
+        sendMsg(msg, "-t", "");
     }
     else if (mode == 'k')
     {
         this->_keyStatus = false;
         this->_password.clear();
-        //send message
+        sendMsg(msg, "-k", "");
     }
     else if (mode == 'o')
     {
         this->setNameAdmin("-o", pArg);
-        //send message
+        sendMsg(msg, "-o", pArg);
     }
     else if (mode == 'l')
     {
         this->_limit = 0;
-        //sendMessage
+        sendMsg(msg, "-l", "");
     }
 }

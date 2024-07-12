@@ -4,17 +4,19 @@ This project is about creating your own IRC server. You will use an actual IRC c
 
 # CMD
 
+//sortie du server proprement
+
 -CAP => OK
 -PASS => OK
 -NICK => OK
 -USER => OK
 -PING => OK
 -PONG => OK
--QUIT => OK => sortir les client de chan
+-QUIT => OK
 -TOPIC => tester TOPIC avec nc et irssi
 -JOIN =>        -le nombre de client dans le channel
                 -etablir le mode a la creation
-                -faire un vecter<string> de nameAdmin
+                -faire un vector<string> de nameAdmin
                 -3em arg => topic
 -PRIVMSG
         verifier pour toute les commande si le client est bien enregistre
