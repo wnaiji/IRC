@@ -1,4 +1,4 @@
-#include "ft_irc.hpp"
+
 
 /*## This is CAP order management ##*/
 
@@ -169,6 +169,14 @@ void    quitCmd(std::string const & pMsg, Server & Server, int const & fd)
         if (fd != it->second.getFd())
             SendMsg::QUIT(msg, it->second.getFd());
     }
+    for (std::map<std::string, Channel>::iterator it = Server._channels.begin(); it != Server._channels.end(); it++)
+    {
+        for (std::map<int, Client *>::iterator it2 = it->second._clients.begin(); it2 != it->second._clients.end(); it2++)
+        {
+            if (Server._clients[fd].getNick() == it2->second->getNick())
+                it->second._clients.erase(fd);
+        }
+    }
     Server._clients.erase(fd);
     return ;
 }
@@ -184,7 +192,7 @@ std::vector<std::string>   splitNameChannel(std::string const & line)
     {
         if (line[i] == '#')
         {
-            while (line[i] != ' ' && line[i] != ',' && line[i])
+            while (line[i] != ',' && line[i])
                 name += line[i++];
             nameChannels.push_back(name);
             name.clear();
@@ -193,13 +201,70 @@ std::vector<std::string>   splitNameChannel(std::string const & line)
     return nameChannels;
 }
 
+std::vector<std::string>    splitKeyChannels(std::string const & line)
+{
+    std::string                 key;
+    std::vector<std::string>    keyChannels;
+
+    for (int i = 0; line[i]; i++)
+    {
+        if (line[i] == '#')
+        {
+            while (line[i] != ',' && line[i])
+                key += line[i++];
+            keyChannels.push_back(key);
+            key.clear();
+        }
+    }
+    return keyChannels;
+}
+
+static bool    invite(std::string const & channel, Server & Server, int const & fd)
+{
+    if (Server._channels[channel].getInviteStatus() == true)
+    {
+        std::vector<std::string>    inviteName = Server._channels[channel].getInvitName();
+        for (std::vector<std::string>::iterator it = inviteName.begin(); it != inviteName.end(); it++)
+        {
+            if (*it == Server._clients[fd].getNick())
+                return true;
+        }
+        return false;
+    }
+    return true;
+}
+
+static bool    limmit(std::string const & channel, Server & Server, int const & fd)
+{
+    if (Server._channels[channel].getLimit() > 0)
+    {
+        if (Server._channels[channel]._clients.size() >= Server._channels[channel].getLimit())
+            return false;
+    }
+    return true;
+}
+
+static bool     password(std::string const & channel, std::string const & password, Server & Server, int const & fd)
+{
+    if (Server._channels[channel].getKeyStatus() == true)
+    {
+        if (Server._channels[channel].getPassWord() == password)
+            return true;
+    }
+    return true;
+}
+
 void    joinCmd(std::string const & pMsg, Server & Server, int const & fd)
 {
     std::vector<std::string>                    nameChannels;
+    std::vector<std::string>                    keyChannels;
     std::map<std::string, Channel>::iterator    channelIt;
+    int                                         pos = pMsg.find(' ');
 
-    nameChannels = splitNameChannel(pMsg);
-
+    nameChannels = splitNameChannel(pMsg.substr(0, pos));
+    if (pos != std::string::npos)
+        keyChannels = splitKeyChannels(pMsg.substr(pos + 1, std::string::npos));
+    pos = 0;
     for (std::vector<std::string>::iterator it = nameChannels.begin(); it != nameChannels.end(); it++)
     {
         channelIt = Server._channels.find(*it);
@@ -217,7 +282,7 @@ void    joinCmd(std::string const & pMsg, Server & Server, int const & fd)
             SendMsg::RPL_NAMREPLY(Server._channels[*it], Server, fd);
             SendMsg::RPL_ENDOFNAMES(Server._channels[*it], Server, fd);
         }
-        else
+        else if (invite(*it, Server, fd) && limmit(*it, Server, fd) && password(*it, keyChannels[pos], Server, fd))
         {
             Server._channels[*it]._clients[fd] = &Server._clients[fd];
             SendMsg::JOINS(*it, Server, fd);
@@ -228,6 +293,7 @@ void    joinCmd(std::string const & pMsg, Server & Server, int const & fd)
             SendMsg::RPL_NAMREPLY(Server._channels[*it], Server, fd);
             SendMsg::RPL_ENDOFNAMES(Server._channels[*it], Server, fd);
         }
+        pos++;
     }
 }
 
