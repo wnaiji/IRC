@@ -4,8 +4,6 @@ This project is about creating your own IRC server. You will use an actual IRC c
 
 # CMD
 
-//sortie du server proprement
-
 -CAP => OK
 -PASS => OK
 -NICK => OK
@@ -14,8 +12,7 @@ This project is about creating your own IRC server. You will use an actual IRC c
 -PONG => OK
 -QUIT => OK
 -TOPIC => OK
--JOIN =>        adapter en fonction de mode
-   # verifier que les message lors de la modification de NICK ou lors de l'envoie QUIT ne sois pas double si les clients ce retrouve sur plusieurs channel a la fois
+-JOIN => OK
 -PRIVMSG => OK
 -MODE =>        - + et -l => OK
                 - + et -k => OK
@@ -24,12 +21,7 @@ This project is about creating your own IRC server. You will use an actual IRC c
                 - + et -i => OK
 -INVITE => OK
 -PART => OK
-
-KICK
-
-NO
-WHO
-WHOIS
+-KICK => OK
 
 # DOC
 

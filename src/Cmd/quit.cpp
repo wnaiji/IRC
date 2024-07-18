@@ -5,9 +5,9 @@ void    quitCmd(std::string const & pMsg, Server & Server, int const & fd)
     std::string msg;
 
     if (pMsg.empty())
-        msg = ":" + Server._clients[fd].getNick() + "!" + Server._clients[fd].getNick() + "@host QUIT :leaving\r\n";
+        msg = ":" + Server._clients[fd].getNick() + "!" + Server._clients[fd].getNick() + "@" + Server._clients[fd].getNick() + " QUIT :leaving\r\n";
     else
-        msg = ":" + Server._clients[fd].getNick() + "!" + Server._clients[fd].getNick() + "@host QUIT " + pMsg + "\r\n";
+        msg = ":" + Server._clients[fd].getNick() + "!" + Server._clients[fd].getNick() + "@" + Server._clients[fd].getNick() + " QUIT " + pMsg + "\r\n";
     for (std::map<int, Client>::iterator it = Server._clients.begin(); it != Server._clients.end(); it++)
     {
         if (fd != it->second.getFd())

@@ -34,8 +34,9 @@ static void    sendToUserChan(std::string const & pMsg, Server & Server, int con
             {
                 for (it2 = it->second._clients.begin(); it2 != it->second._clients.end(); it2++)
                 {
-                        std::string msg = ":" + Server._clients[fd].getNick() + "!~" + it2->second->getNick() + "@localhost NICK :" + pMsg + "\r\n";
+                        std::string msg = ":" + Server._clients[fd].getNick() + "!~" + it2->second->getNick() + "@" + it2->second->getNick() + " NICK :" + pMsg + "\r\n";
                         send(it2->second->getFd(), msg.c_str(), msg.size(), 0);
+                        COUT_YELLOW(">> " << msg);
                 }
                 break ;
             }

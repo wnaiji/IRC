@@ -44,6 +44,7 @@ void    sendChannel(std::string pMsg, std::string & chan, Server & Server, int c
             if (it->first != fd)
                 send(it->second->getFd(), msg.c_str(), msg.size(), 0);
         }
+        COUT_YELLOW(">> " << msg);
     }
     return ;
 }
@@ -58,11 +59,10 @@ void    sendClient(std::string pMsg, std::string & client, Server & Server, int 
         if (client == it->second.getNick())
         {
             send(it->first, pMsg.c_str(), pMsg.size(), 0);
+            COUT_YELLOW(">> " << pMsg);
             ok = true;
         }
     }
-    //if (!ok)
-    //    SendMsg::ERR_NOSUCHNICK(client, Server, fd);
     return ;
 }
 

@@ -3,27 +3,22 @@
 
 # include <string>
 # include <iostream>
-# include <cstdlib> // for strtol(), exit()
-// to see
-# include <stdexcept> // for runtime_error()
-# include <unistd.h> // for close(), read()
+# include <cstdlib>
+# include <stdexcept>
+# include <unistd.h>
 # include <sys/socket.h>
 # include <netinet/in.h> 
 # include <arpa/inet.h>
 # include <fcntl.h>
 # include <map>
 # include <vector>
-# include <cerrno> // for strerror and global errno
+# include <cerrno>
 # include <cstring>
 # include <pthread.h>
 # include <csignal>
 # include <sys/wait.h>
-// end to see
-# include <sys/epoll.h> // for epoll_create1(), epoll_ctl(), struct epoll_event
-
-//fe
+# include <sys/epoll.h>
 # include <sstream>
-
 # include "Client.hpp"
 # include "Channel.hpp"
 
@@ -31,7 +26,7 @@
 #define READ_BUFFER_SIZE 512
 
 using std::string;
-using std::cout; // to rm ?
+using std::cout;
 using std::cerr;
 using std::endl;
 
@@ -65,9 +60,6 @@ class Server
 
 		void			init(void);
 		void			run(void);
-		//void			sendPing(void);
-		//void			startPingLoop(void);
-		//void    		disck(void);
 
 		int const &		getPort(void) const;
 		string const &	getPassword(void) const;

@@ -162,11 +162,10 @@ void    Channel::sendMsg(std::string & msg, std::string mode, std::string param)
 {
     msg += mode;
     (void)param;
-    //if (!param.empty())
-    //    msg += " " + param;
     msg += "\r\n";
     for (std::map<int, Client *>::iterator it = this->_clients.begin(); it != this->_clients.end(); it++)
         send(it->first, msg.c_str(), msg.size(), 0);
+    COUT_YELLOW(">> " << msg);
     return ;
 }
 

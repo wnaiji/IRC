@@ -1,8 +1,8 @@
 #ifndef FT_IRC_HPP
 # define FT_IRC_HPP
 
-# include <cstdlib> // for strtol
-# include <cerrno> // for errno
+# include <cstdlib>
+# include <cerrno>
 # include <iostream>
 
 # include "SendMsg.hpp"
@@ -10,6 +10,23 @@
 
 # define PORT_MIN 1024
 # define PORT_MAX 65535
+
+#define RESET       "\033[0m"
+#define RED         "\033[31m"
+#define GREEN       "\033[32m"
+#define YELLOW      "\033[33m"
+#define BLUE        "\033[34m"
+#define MAGENTA     "\033[35m"
+#define CYAN        "\033[36m"
+
+#define COUT_RED(x)     std::cerr << RED << x << RESET << std::endl
+#define COUT_GREEN(x)   std::cout << GREEN << x << RESET << std::endl
+#define COUT_YELLOW(x)  std::cout << YELLOW << x << RESET << std::endl
+#define COUT_BLUE(x)    std::cout << BLUE << x << RESET << std::endl
+#define COUT_MAGENTA(x) std::cout << MAGENTA << x << RESET << std::endl
+#define COUT_CYAN(x)    std::cout << CYAN << x << RESET << std::endl
+#define COUT_WHITE(x)   std::cout << WHITE << x << RESET << std::endl
+
 
 enum e_exit_error
 {

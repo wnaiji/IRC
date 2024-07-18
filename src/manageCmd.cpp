@@ -78,7 +78,7 @@ void    manageCmd(std::string const & line, Server & Server, int const & fd)
     bool        (*isCmd[])(std::string const &) = {isCap, isPass, isNick, isUser, isPing, \
                                                     isPong, isQuit, isJoin, isTopic, isPrivmsg, \
                                                     isMode, isInvite, isPart, isKick};
-    std::cout << line << std::endl;
+    COUT_MAGENTA("<< " << line);
     if (pos != std::string::npos)
     {
         cmd = line.substr(0, pos);

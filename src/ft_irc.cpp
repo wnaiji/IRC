@@ -6,17 +6,17 @@ static int get_port(char const * port_str)
     long int port = strtol(port_str, &end, 10); // to see ?
     if (*end != '\0')
     {
-        cerr << "Error: get_port: parsing port" << endl;
+        COUT_RED("Error: get_port: parsing port");
         return(GET_PORT_ERROR_PARS);
     }
     else if (errno == ERANGE)
     {
-        cerr << "Error: get_port: ERANGE port" << endl;
+        COUT_RED("Error: get_port: ERANGE port");
         return (GET_PORT_ERROR_LIMIT);
     }
     else if (port < PORT_MIN || port > PORT_MAX)
     {
-        cerr << "Error: get_port: need to be in the range [" << PORT_MIN << ", " << PORT_MAX << "]" << endl;
+        COUT_RED("Error: get_port: need to be in the range [" << PORT_MIN << ", " << PORT_MAX << "]");
         return (GET_PORT_ERROR_RANGE);
     }
     return (static_cast<int>(port));
@@ -26,7 +26,7 @@ int main(int argc, char **argv)
 {
     if (argc != 3)
     {
-        cerr << "Error: main: args need to be in format './ircserv <port> <password>'" << endl;
+        COUT_RED("Error: main: args need to be in format './ircserv <port> <password>'");
         return 1;
     }
     int port = get_port(argv[1]);

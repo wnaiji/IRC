@@ -25,6 +25,7 @@ public:
     ~Client(void);
 
     struct sockaddr_in 		_addr;
+    std::string         _history;
 
     bool const &                getCap(void) const;
     bool const &                getPass(void) const;
