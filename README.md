@@ -17,13 +17,14 @@ This project is about creating your own IRC server. You will use an actual IRC c
 -JOIN =>        adapter en fonction de mode
    # verifier que les message lors de la modification de NICK ou lors de l'envoie QUIT ne sois pas double si les clients ce retrouve sur plusieurs channel a la fois
 -PRIVMSG => OK
-MODE => - + et -l => OK
-        - + et -k => OK
-        - + et -t => OK
-        - + et -o => OK
-        - i => coder INVITE
-INVITE
-PART
+-MODE =>        - + et -l => OK
+                - + et -k => OK
+                - + et -t => OK
+                - + et -o => OK
+                - + et -i => OK
+-INVITE => OK
+-PART => OK
+
 KICK
 
 NO

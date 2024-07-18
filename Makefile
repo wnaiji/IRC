@@ -27,7 +27,9 @@ SRCS            = $(addprefix $(SRC_DIR), \
                     Cmd/privmsg.cpp \
                     Cmd/quit.cpp \
                     Cmd/topic.cpp \
-                    Cmd/user.cpp)
+                    Cmd/user.cpp \
+                    Cmd/invite.cpp \
+                    Cmd/part.cpp)
 
 OBJS            = $(addprefix $(OBJ_DIR), $(notdir $(SRCS:.cpp=.o)))
 

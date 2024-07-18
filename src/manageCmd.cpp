@@ -55,6 +55,16 @@ static bool isMode(std::string const & cmd)
     return cmd == "MODE";
 }
 
+static bool isInvite(std::string const & cmd)
+{
+    return cmd == "INVITE";
+}
+
+static bool isPart(std::string const & cmd)
+{
+    return cmd == "PART";
+}
+
 void    manageCmd(std::string const & line, Server & Server, int const & fd)
 {
     size_t      pos = line.find(' ');
@@ -62,7 +72,7 @@ void    manageCmd(std::string const & line, Server & Server, int const & fd)
     std::string msg;
     bool        (*isCmd[])(std::string const &) = {isCap, isPass, isNick, isUser, isPing, \
                                                     isPong, isQuit, isJoin, isTopic, isPrivmsg, \
-                                                    isMode};
+                                                    isMode, isInvite, isPart};
     std::cout << line << std::endl;
     if (pos != std::string::npos)
     {
@@ -74,7 +84,7 @@ void    manageCmd(std::string const & line, Server & Server, int const & fd)
     else
         cmd = line;
 
-    for (int i = 0; i < 11; i++)
+    for (int i = 0; i < 13; i++)
     {
         if (isCmd[i](cmd) == true)
         {
@@ -123,6 +133,14 @@ void    manageCmd(std::string const & line, Server & Server, int const & fd)
             case 10:
                 modeCmd(msg, Server, fd);
                 break ;
+
+            case 11:
+                inviteCmd(msg, Server, fd);
+                break ;
+
+            case 12:
+                partCmd(msg, Server, fd);
+                break;
             }
         }
     }

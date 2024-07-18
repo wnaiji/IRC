@@ -34,5 +34,7 @@ void    joinCmd(std::string const & pMsg, Server & Server, int const & fd);
 void    topicCmd(std::string const & pMsg, Server & Server, int const & fd);
 void    privmsgCmd(std::string const & pMsg, Server & Server, int const & fd);
 void    modeCmd(std::string const & pMsg, Server & Server, int const & fd);
+void    inviteCmd(std::string const & pMsg, Server & Server, int const & fd);
+void    partCmd(std::string const & pMsg, Server & Server, int const & fd);
 
 #endif

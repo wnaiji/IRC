@@ -14,6 +14,7 @@ public:
     static void CAP(int const & index, int const & fd);
     static void QUIT(std::string const & cmd, int const & fd);
     static void JOINS(std::string const & name, Server & Server, int const & fd);
+    static void PART(std::string const & name, Server & Server, int const & fd);
 
     static void RPL_WELCOME(Server & Server, int const & fd);
     static void RPL_YOURHOST(Server & Server, int const & fd);
@@ -24,6 +25,7 @@ public:
     static void RPL_ENDOFNAMES(Channel const & Channel, Server & Server, int const & fd);
     static void RPL_NOTOPIC(Channel const & Channel, Server & Server, int const & fd);
     static void RPL_CHANNELMODEIS(Channel const & Channel, Server & Server, int const & fd);
+    static void RPL_INVITING(std::string const & channel, std::string const & nick, Server & Server, int const & fd);
 
     static void ERR_PASSWDMISMATCH(int const & fd);
     static void ERR_NICKNAMEINUSE(std::string const & nick, int const & fd);
@@ -39,6 +41,7 @@ public:
     static void ERR_CHANNELISFULL(std::string const & channel, Server & Server, int const & fd);
     static void ERR_BADCHANNELKEY(std::string const & channel, Server & Server, int const & fd);
     static void ERR_INVITEONLYCHAN(std::string const & channel, Server & Server, int const & fd);
+    static void ERR_USERONCHANNEL(std::string const & channel, std::string const & nick, Server & Server, int const & fd);
 };
 
 #endif

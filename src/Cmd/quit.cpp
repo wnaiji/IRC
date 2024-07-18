@@ -18,7 +18,11 @@ void    quitCmd(std::string const & pMsg, Server & Server, int const & fd)
         for (std::map<int, Client *>::iterator it2 = it->second._clients.begin(); it2 != it->second._clients.end(); it2++)
         {
             if (Server._clients[fd].getNick() == it2->second->getNick())
+            {
                 it->second._clients.erase(fd);
+                if (Server._channels[it->first]._clients.size() == 0)
+                    Server._channels.erase(it->first);
+            }
         }
     }
     Server._clients.erase(fd);

@@ -32,6 +32,14 @@ void    SendMsg::JOINS(std::string const & name, Server & Server, int const & fd
     return ;
 }
 
+void    SendMsg::PART(std::string const & name, Server & Server, int const & fd)
+{
+    std::string msg = ":" + Server._clients[fd].getNick() + "!" + Server._clients[fd].getNick() + "@" + Server._clients[fd].getNick() + " PART " + name + "\r\n";
+    for (std::map<int, Client *>::iterator it = Server._channels[name]._clients.begin(); it != Server._channels[name]._clients.end(); it++)
+        send(it->first, msg.c_str(), msg.size(), 0);
+    return ;
+}
+
 void    SendMsg::RPL_WELCOME(Server & Server, int const & fd)
 {
     std::string msg = ":42serv 001 " + Server._clients[fd].getNick() + " :Welcome to the Internet Relay Network, " + Server._clients[fd].getNick() + "!" + Server._clients[fd].getUser() + "@" + Server._clients[fd].getUser() + "\r\n";
@@ -122,6 +130,13 @@ void    SendMsg::RPL_CHANNELMODEIS(Channel const & Channel, Server & Server, int
     msg += "\r\n";
     std::cout << msg << std::endl;
     send(fd, msg.c_str(), msg.size(), 0);
+}
+
+void    SendMsg::RPL_INVITING(std::string const & channel, std::string const & nick, Server & Server, int const & fd)
+{
+    std::string msg = ":42serv 341 " + Server._clients[fd].getNick() + " " + nick + " " + channel + "\r\n";
+    send(fd, msg.c_str(), msg.size(), 0);
+    return ;
 }
 
 void    SendMsg::ERR_PASSWDMISMATCH(int const & fd)
@@ -217,6 +232,13 @@ void    SendMsg::ERR_BADCHANNELKEY(std::string const & channel, Server & Server,
 void    SendMsg::ERR_INVITEONLYCHAN(std::string const & channel, Server & Server, int const & fd)
 {
     std::string msg = ":42serv 473 " + Server._clients[fd].getNick() + " " + channel + " :Cannot join channel (+i)\r\n";
+    send(fd, msg.c_str(), msg.size(), 0);
+    return ;
+}
+
+void    SendMsg::ERR_USERONCHANNEL(std::string const & channel, std::string const & nick, Server & Server, int const & fd)
+{
+    std::string msg = ":42serv 443 " + Server._clients[fd].getNick() + " " + nick + " " + channel + " :is already on channel\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
     return ;
 }
