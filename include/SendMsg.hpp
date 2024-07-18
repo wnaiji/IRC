@@ -15,6 +15,7 @@ public:
     static void QUIT(std::string const & cmd, int const & fd);
     static void JOINS(std::string const & name, Server & Server, int const & fd);
     static void PART(std::string const & name, Server & Server, int const & fd);
+    static void KICK(std::string const & name, std::string const & nick, Server & Server, int const & fd);
 
     static void RPL_WELCOME(Server & Server, int const & fd);
     static void RPL_YOURHOST(Server & Server, int const & fd);

@@ -10,7 +10,7 @@ static bool onChannel(std::string const & nick, Channel const & Channel)
     return false;
 }
 
-int fdDest(std::string const & nick, Server & Server)
+static int fdDest(std::string const & nick, Server & Server)
 {
     for (std::map<int, Client>::iterator it = Server._clients.begin(); it != Server._clients.end(); it++)
     {

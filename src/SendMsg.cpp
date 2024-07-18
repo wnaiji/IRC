@@ -40,6 +40,13 @@ void    SendMsg::PART(std::string const & name, Server & Server, int const & fd)
     return ;
 }
 
+void    SendMsg::KICK(std::string const & name, std::string const & nick, Server & Server, int const & fd)
+{
+    std::string msg = ":" + Server._clients[fd].getNick() + "!" + Server._clients[fd].getNick() + "@" + Server._clients[fd].getNick() + " KICK " + name + " " + nick + ":HESSSSS!!!\r\n";
+    for (std::map<int, Client *>::iterator it = Server._channels[name]._clients.begin(); it != Server._channels[name]._clients.end(); it++)
+        send(it->first, msg.c_str(), msg.size(), 0);
+}
+
 void    SendMsg::RPL_WELCOME(Server & Server, int const & fd)
 {
     std::string msg = ":42serv 001 " + Server._clients[fd].getNick() + " :Welcome to the Internet Relay Network, " + Server._clients[fd].getNick() + "!" + Server._clients[fd].getUser() + "@" + Server._clients[fd].getUser() + "\r\n";
