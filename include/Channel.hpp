@@ -17,6 +17,7 @@ private:
     bool                        _inviteStatus;
     bool                        _topicStatus;
     bool                        _keyStatus;
+    bool                        _limitStatus;
     int                         _limit;
 
 public:
@@ -35,6 +36,7 @@ public:
     bool const &                        getTopicStatus(void) const;
     bool const &                        getKeyStatus(void) const;
     int const &                         getLimit(void) const;
+    bool const &                        getLimitStatus(void) const;
 
     void                                setTopic(std::string const & topic);
     void                                setNameAdmin(std::string const & cmd, std::string const & nameAdmin);

@@ -35,8 +35,8 @@ using std::cout; // to rm ?
 using std::cerr;
 using std::endl;
 
-typedef struct sockaddr_in6	t_sockaddr_in6;
-typedef struct in6_addr		t_in6_addr;
+typedef struct sockaddr_in	t_sockaddr_in;
+typedef struct in_addr		t_in_addr;
 typedef struct sockaddr		t_sockaddr;
 typedef struct epoll_event	t_epoll_event;
 
@@ -49,7 +49,7 @@ class Server
 		const int				_port;
 		std::string				_password;
 		int						_fd_socket;
-		t_sockaddr_in6 			_addr;
+		t_sockaddr_in 			_addr;
 		int						_fd_epoll;
 		pthread_t 				_thread;
 		std::string const		_pingMsg;

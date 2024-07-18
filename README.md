@@ -13,19 +13,17 @@ This project is about creating your own IRC server. You will use an actual IRC c
 -PING => OK
 -PONG => OK
 -QUIT => OK
--TOPIC => verifier l'otorisation avant
--JOIN =>        -quand un nouveau client rentre dans le channel il ne voie pas
-                        la vrai liste de opperator
-                -le nombre de client dans le channel
-                -etablir le mode a la creation
-                -faire un vector<string> de nameAdmin
-                -3em arg => topic
--PRIVMSG
-        verifier pour toute les commande si le client est bien enregistre
+-TOPIC => OK
+-JOIN =>        adapter en fonction de mode
    # verifier que les message lors de la modification de NICK ou lors de l'envoie QUIT ne sois pas double si les clients ce retrouve sur plusieurs channel a la fois
-MODE
-PART
+-PRIVMSG => OK
+MODE => - + et -l => OK
+        - + et -k => OK
+        - + et -t => OK
+        - + et -o => OK
+        - i => coder INVITE
 INVITE
+PART
 KICK
 
 NO

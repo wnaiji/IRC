@@ -25,13 +25,10 @@ std::vector<std::string>    splitKeyChannels(std::string const & line)
 
     for (int i = 0; line[i]; i++)
     {
-        if (line[i] == '#')
-        {
-            while (line[i] != ',' && line[i])
-                key += line[i++];
-            keyChannels.push_back(key);
-            key.clear();
-        }
+        while (line[i] != ',' && line[i])
+            key += line[i++];
+        keyChannels.push_back(key);
+        key.clear();
     }
     return keyChannels;
 }
@@ -65,8 +62,12 @@ static bool     password(std::string const & channel, std::string const & passwo
 {
     if (Server._channels[channel].getKeyStatus() == true)
     {
+        if (password.empty())
+            return false;
         if (Server._channels[channel].getPassWord() == password)
             return true;
+        else
+            return false;
     }
     return true;
 }
@@ -79,8 +80,7 @@ void    joinCmd(std::string const & pMsg, Server & Server, int const & fd)
     unsigned long                               pos = pMsg.find(' ');
 
     nameChannels = splitNameChannel(pMsg.substr(0, pos));
-    if (pos != std::string::npos)
-        keyChannels = splitKeyChannels(pMsg.substr(pos + 1, std::string::npos));
+    keyChannels = splitKeyChannels(pMsg.substr(pos + 1, std::string::npos));
     pos = 0;
     for (std::vector<std::string>::iterator it = nameChannels.begin(); it != nameChannels.end(); it++)
     {
@@ -99,16 +99,25 @@ void    joinCmd(std::string const & pMsg, Server & Server, int const & fd)
             SendMsg::RPL_NAMREPLY(Server._channels[*it], Server, fd);
             SendMsg::RPL_ENDOFNAMES(Server._channels[*it], Server, fd);
         }
-        else if (invite(*it, Server, fd) && limmit(*it, Server) && password(*it, keyChannels[pos], Server))
+        else
         {
-            Server._channels[*it]._clients[fd] = &Server._clients[fd];
-            SendMsg::JOINS(*it, Server, fd);
-            if (Server._channels[*it].getTopic().empty())
-                SendMsg::RPL_NOTOPIC(Server._channels[*it], Server, fd);
+            if (invite(*it, Server, fd) == false)
+                SendMsg::ERR_INVITEONLYCHAN(*it, Server, fd);
+            else if (limmit(*it, Server) == false)
+                SendMsg::ERR_CHANNELISFULL(*it, Server, fd);
+            else if (password(*it, keyChannels[pos], Server) ==  false)
+                SendMsg::ERR_BADCHANNELKEY(*it, Server, fd);
             else
-                SendMsg::RPL_TOPIC(Server._channels[*it], Server, fd);
-            SendMsg::RPL_NAMREPLY(Server._channels[*it], Server, fd);
-            SendMsg::RPL_ENDOFNAMES(Server._channels[*it], Server, fd);
+            {
+                Server._channels[*it]._clients[fd] = &Server._clients[fd];
+                SendMsg::JOINS(*it, Server, fd);
+                if (Server._channels[*it].getTopic().empty())
+                    SendMsg::RPL_NOTOPIC(Server._channels[*it], Server, fd);
+                else
+                    SendMsg::RPL_TOPIC(Server._channels[*it], Server, fd);
+                SendMsg::RPL_NAMREPLY(Server._channels[*it], Server, fd);
+                SendMsg::RPL_ENDOFNAMES(Server._channels[*it], Server, fd);
+            }
         }
         pos++;
     }

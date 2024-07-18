@@ -8,8 +8,9 @@ Channel::Channel(void)
 Channel::Channel(std::string const & name) : _name(name)
 {
     this->_inviteStatus = false;
-    this->_topicStatus = false;
+    this->_topicStatus = true;
     this->_keyStatus = false;
+    this->_limitStatus = false;
     return ;
 }
 
@@ -63,6 +64,11 @@ bool const &    Channel::getKeyStatus(void) const
 int const &     Channel::getLimit(void) const
 {
     return this->_limit;
+}
+
+bool const &    Channel::getLimitStatus(void) const
+{
+    return this->_limitStatus;
 }
 
 /*---------------SETTER---------------*/
@@ -155,8 +161,9 @@ void    Channel::setLimit(std::string const & pLimit)
 void    Channel::sendMsg(std::string & msg, std::string mode, std::string param)
 {
     msg += mode;
-    if (!param.empty())
-        msg += " " + param;
+    (void)param;
+    //if (!param.empty())
+    //    msg += " " + param;
     msg += "\r\n";
     for (std::map<int, Client *>::iterator it = this->_clients.begin(); it != this->_clients.end(); it++)
         send(it->first, msg.c_str(), msg.size(), 0);
@@ -189,6 +196,7 @@ void    Channel::addMode(char const & mode, std::string const & pArg, Server & S
     }
     else if (mode == 'l')
     {
+        this->_limitStatus = true;
         this->setLimit(pArg);
         sendMsg(msg, "+l", pArg);
     }
@@ -221,6 +229,7 @@ void    Channel::removeMode(char const & mode, std::string const & pArg, Server 
     }
     else if (mode == 'l')
     {
+        this->_limitStatus = false;
         this->_limit = 0;
         sendMsg(msg, "-l", "");
     }

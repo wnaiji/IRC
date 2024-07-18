@@ -36,6 +36,9 @@ public:
     static void ERR_NOSUCHCHANNEL(std::string const & channel, Server & Server, int const & fd);
     static void ERR_NOTONCHANNEL(std::string const & channel, Server & Server, int const & fd);
     static void ERR_CHANOPRIVSNEEDED(std::string const & channel, Server & Server, int const & fd);
+    static void ERR_CHANNELISFULL(std::string const & channel, Server & Server, int const & fd);
+    static void ERR_BADCHANNELKEY(std::string const & channel, Server & Server, int const & fd);
+    static void ERR_INVITEONLYCHAN(std::string const & channel, Server & Server, int const & fd);
 };
 
 #endif

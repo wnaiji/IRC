@@ -117,6 +117,8 @@ void    SendMsg::RPL_CHANNELMODEIS(Channel const & Channel, Server & Server, int
         msg += "t";
     if (Channel.getKeyStatus() == true)
         msg += "k";
+    if (Channel.getLimitStatus() == true)
+        msg += "l";
     msg += "\r\n";
     std::cout << msg << std::endl;
     send(fd, msg.c_str(), msg.size(), 0);
@@ -194,6 +196,27 @@ void    SendMsg::ERR_NOTONCHANNEL(std::string const & channel, Server & Server, 
 void    SendMsg::ERR_CHANOPRIVSNEEDED(std::string const & channel, Server & Server, int const & fd)
 {
     std::string msg = ":42serv 482 " + Server._clients[fd].getNick() + " " + channel + " :You're not channel operator\r\n";
+    send(fd, msg.c_str(), msg.size(), 0);
+    return ;
+}
+
+void    SendMsg::ERR_CHANNELISFULL(std::string const & channel, Server & Server, int const & fd)
+{
+    std::string msg = ":42serv 471 " + Server._clients[fd].getNick() + " " + channel + " :Cannot join channel (+l)\r\n";
+    send(fd, msg.c_str(), msg.size(), 0);
+    return ;
+}
+
+void    SendMsg::ERR_BADCHANNELKEY(std::string const & channel, Server & Server, int const & fd)
+{
+    std::string msg = ":42serv 475 " + Server._clients[fd].getNick() + " " + channel + " :Cannot join channel (+k)\r\n";
+    send(fd, msg.c_str(), msg.size(), 0);
+    return ;
+}
+
+void    SendMsg::ERR_INVITEONLYCHAN(std::string const & channel, Server & Server, int const & fd)
+{
+    std::string msg = ":42serv 473 " + Server._clients[fd].getNick() + " " + channel + " :Cannot join channel (+i)\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
     return ;
 }

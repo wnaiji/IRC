@@ -8,14 +8,10 @@ Server::Server(int const & pPort, string const & pPassword)
 }
 
 void    Server::init(void)
-{
-    const t_in6_addr  set_sin6_addr = IN6ADDR_ANY_INIT;
-    
-    this->_addr.sin6_family = AF_INET;
-    this->_addr.sin6_port = htons(this->_port);
-    this->_addr.sin6_flowinfo = 0;
-    this->_addr.sin6_addr = set_sin6_addr;
-    this->_addr.sin6_scope_id = 0;
+{   
+    this->_addr.sin_family = AF_INET;
+    this->_addr.sin_port = htons(this->_port);
+    this->_addr.sin_addr.s_addr = INADDR_ANY;
 
     this->_fd_socket = socket(AF_INET, SOCK_STREAM, 0);
     if (this->_fd_socket == -1)
@@ -65,7 +61,6 @@ void    Server::run(void)
                 else
                 {
                     cout << "new connection client_fd: " << client_fd << endl;
-                    //disck();
                     this->_clients[client_fd].init(clientAddr, client_fd);
                     struct epoll_event event = this->_clients[client_fd].getEvent();
                     if (epoll_ctl(this->_fd_epoll, EPOLL_CTL_ADD, client_fd, &event) == -1)

@@ -22,13 +22,22 @@ void    topicCmd(std::string const & pMsg, Server & Server, int const & fd)
         SendMsg::ERR_NOSUCHCHANNEL(channel, Server, fd);
     else if (Server._channels[channel]._clients.find(fd) == Server._channels[channel]._clients.end())
         SendMsg::ERR_NOTONCHANNEL(channel, Server, fd);
-    else if (yourAreAdmin(Server._channels[channel].getNameAdmin(), Server._clients[fd].getNick()) == false)
-        SendMsg::ERR_CHANOPRIVSNEEDED(channel, Server, fd);
-    else
+    else if (Server._channels[channel].getTopicStatus() == true)
     {
-        Server._channels[channel].setTopic(topic);
-        for (std::map<int, Client *>::iterator it = Server._channels[channel]._clients.begin(); it != Server._channels[channel]._clients.end(); it++)
-            SendMsg::RPL_TOPIC(Server._channels[channel], Server, it->first);
+        if (yourAreAdmin(Server._channels[channel].getNameAdmin(), Server._clients[fd].getNick()) == false)
+            SendMsg::ERR_CHANOPRIVSNEEDED(channel, Server, fd);
+        else
+        {
+            Server._channels[channel].setTopic(topic);
+            for (std::map<int, Client *>::iterator it = Server._channels[channel]._clients.begin(); it != Server._channels[channel]._clients.end(); it++)
+                SendMsg::RPL_TOPIC(Server._channels[channel], Server, it->first);
+        }
     }
+    else
+        {
+            Server._channels[channel].setTopic(topic);
+            for (std::map<int, Client *>::iterator it = Server._channels[channel]._clients.begin(); it != Server._channels[channel]._clients.end(); it++)
+                SendMsg::RPL_TOPIC(Server._channels[channel], Server, it->first);
+        }
     return ;
 }

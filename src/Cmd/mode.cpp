@@ -63,9 +63,10 @@ void    handleModeCommand(std::string const & pMode, std::string const & channel
         else
         {
             if (adding)
-                Server._channels[channel].addMode(mode[i], *it++, Server, fd);
+                Server._channels[channel].addMode(mode[i], *it, Server, fd);
             else
-                Server._channels[channel].removeMode(mode[i], *it++, Server, fd);
+                Server._channels[channel].removeMode(mode[i], *it, Server, fd);
+            it++;
         }
     }
     return ;
