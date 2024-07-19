@@ -2,7 +2,7 @@
 
 
 Server::Server(int const & pPort, string const & pPassword) 
-: _port(pPort), _password(pPassword), _pingMsg("42serv_4428")
+: _port(pPort), _password(pPassword), _pingMsg("42serv_4428"), _bothStatus(false)
 {
     return ;
 }
@@ -99,6 +99,7 @@ void    Server::run(void)
                         if (this->_clients[events[i].data.fd]._history.empty() == false)
                             msg = this->_clients[events[i].data.fd]._history += msg;
                         this->_clients[events[i].data.fd].newMsg(msg, *this, events[i].data.fd);
+                        this->_clients[events[i].data.fd]._history.clear();
                     }
                     else
                         this->_clients[events[i].data.fd]._history += msg;
@@ -113,6 +114,14 @@ Server::~Server(void)
 {
     close(this->_fd_epoll);
     close(this->_fd_socket);
+    return ;
+}
+
+void    Server::initBoth(void)
+{
+    this->_bothStatus = true;
+    std::srand(std::time(0));
+    this->_bothValue = std::rand() % 100 + 1;
     return ;
 }
 
@@ -131,8 +140,23 @@ string const &  Server::getPingMsg(void) const
     return this->_pingMsg;
 }
 
+bool const &    Server::getBothStatus(void) const
+{
+    return this->_bothStatus;
+}
+
+int const &     Server::getBothValue(void) const
+{
+    return this->_bothValue;
+}
+
 void    Server::setPassword(string const & pNewPassword)
 {
     this->_password = pNewPassword;
 }
 
+void    Server::setBothStatus(void)
+{
+    this->_bothStatus = false;
+    return ;
+}

@@ -48,6 +48,9 @@ class Server
 		int						_fd_epoll;
 		pthread_t 				_thread;
 		std::string const		_pingMsg;
+
+		bool					_bothStatus;
+		int						_bothValue;
 	private:
 		Server(void);
 		Server(Server const & pSrc);
@@ -60,14 +63,17 @@ class Server
 
 		void			init(void);
 		void			run(void);
+		void			initBoth(void);
 
 		int const &		getPort(void) const;
 		string const &	getPassword(void) const;
 		string const &	getPingMsg(void) const;
+		bool const &	getBothStatus(void) const;
+		int const &		getBothValue(void) const;
 
-
-		static void*   	timeoutCheckerThread(void* arg);
 		void			setPassword(string const & pNewPassword);
+		void    		setBothStatus(void);
+
 };
 
 #endif

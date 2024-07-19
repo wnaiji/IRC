@@ -70,6 +70,11 @@ static bool isKick(std::string const & cmd)
     return cmd == "KICK";
 }
 
+static bool isBoth(std::string const & cmd)
+{
+    return cmd == "BOTH";
+}
+
 void    manageCmd(std::string const & line, Server & Server, int const & fd)
 {
     size_t      pos = line.find(' ');
@@ -77,7 +82,7 @@ void    manageCmd(std::string const & line, Server & Server, int const & fd)
     std::string msg;
     bool        (*isCmd[])(std::string const &) = {isCap, isPass, isNick, isUser, isPing, \
                                                     isPong, isQuit, isJoin, isTopic, isPrivmsg, \
-                                                    isMode, isInvite, isPart, isKick};
+                                                    isMode, isInvite, isPart, isKick, isBoth};
     COUT_MAGENTA("<< " << line);
     if (pos != std::string::npos)
     {
@@ -89,7 +94,7 @@ void    manageCmd(std::string const & line, Server & Server, int const & fd)
     else
         cmd = line;
 
-    for (int i = 0; i < 14; i++)
+    for (int i = 0; i < 15; i++)
     {
         if (isCmd[i](cmd) == true)
         {
@@ -150,6 +155,9 @@ void    manageCmd(std::string const & line, Server & Server, int const & fd)
             case 13:
                 kickCmd(msg, Server, fd);
                 break ;
+
+            case 14:
+                bothCmd(msg, Server, fd);
             }
         }
     }

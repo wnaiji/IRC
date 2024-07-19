@@ -54,5 +54,6 @@ void    modeCmd(std::string const & pMsg, Server & Server, int const & fd);
 void    inviteCmd(std::string const & pMsg, Server & Server, int const & fd);
 void    partCmd(std::string const & pMsg, Server & Server, int const & fd);
 void    kickCmd(std::string const & pMsg, Server & Server, int const & fd);
+void    bothCmd(std::string const & pMsg, Server & Server, int const & fd);
 
 #endif
