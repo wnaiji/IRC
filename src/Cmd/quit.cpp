@@ -3,7 +3,7 @@
 void    quitCmd(std::string const & pMsg, Server & Server, int const & fd)
 {
     std::string msg;
-
+    int         i = 0;
     if (pMsg.empty())
         msg = ":" + Server._clients[fd].getNick() + "!" + Server._clients[fd].getNick() + "@" + Server._clients[fd].getNick() + " QUIT :leaving\r\n";
     else
@@ -19,12 +19,17 @@ void    quitCmd(std::string const & pMsg, Server & Server, int const & fd)
         {
             if (Server._clients[fd].getNick() == it2->second->getNick())
             {
-                it->second._clients.erase(fd);
+                Server._channels[it->first]._clients.erase(fd);
                 if (Server._channels[it->first]._clients.size() == 0)
                     Server._channels.erase(it->first);
+                i = 1;
+                break ;
             }
         }
+        if (i == 1)
+            break ;
     }
     Server._clients.erase(fd);
+    close(fd);
     return ;
 }

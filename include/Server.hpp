@@ -49,6 +49,7 @@ class Server
 		pthread_t 				_thread;
 		std::string const		_pingMsg;
 
+		static bool				Signal;
 		bool					_bothStatus;
 		int						_bothValue;
 	private:
@@ -57,7 +58,9 @@ class Server
 	public:
 		Server(int const & pPort, string const & pPassword);
 		~Server(void);
-		
+
+		static void		SignalHandler(int signum);
+
 		std::map<int, Client>			_clients;
 		std::map<std::string, Channel>	_channels;
 

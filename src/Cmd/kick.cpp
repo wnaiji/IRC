@@ -34,9 +34,9 @@ void    kickCmd(std::string const & pMsg, Server & Server, int const & fd)
 {
     int         pos = pMsg.find(' ');
     std::string channel = pMsg.substr(0, pos);
-    int         pos2 = pMsg.find(':');
-    std::string nick = pMsg.substr(pos + 1, pos2 - 1);
-    std::string comment = pMsg.substr(pos2, std::string::npos);
+    std::string msg = pMsg.substr(pos + 1, std::string::npos);
+    int         pos2 = msg.find(' ');
+    std::string nick = msg.substr(0, pos2);
 
     if (channel.empty())
         SendMsg::ERR_NEEDMOREPARAMS("KICK", fd);

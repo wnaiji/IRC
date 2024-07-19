@@ -1,10 +1,17 @@
 #include "Server.hpp"
 
-
 Server::Server(int const & pPort, string const & pPassword) 
 : _port(pPort), _password(pPassword), _pingMsg("42serv_4428"), _bothStatus(false)
 {
     return ;
+}
+
+bool Server::Signal = false;
+void Server::SignalHandler(int signum)
+{
+	(void)signum;
+	std::cout << std::endl << "Signal Received!" << std::endl;
+	Server::Signal = true;
 }
 
 void    Server::init(void)
@@ -53,7 +60,7 @@ void    Server::run(void)
     char            read_buffer[READ_BUFFER_SIZE + 1];
     
     memset(read_buffer, 0, sizeof(read_buffer));
-    while (true)
+    while (Server::Signal == false)
     {
         COUT_GREEN("[START]");
         event_count = epoll_wait(this->_fd_epoll, events, MAX_EVENTS, -1);
@@ -107,6 +114,7 @@ void    Server::run(void)
             }
         }
     }
+    cout << "finish" << endl;
     return ;
 }
 

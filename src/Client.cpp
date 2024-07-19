@@ -9,7 +9,6 @@ Client::Client(void)
 
 Client::~Client(void)
 {
-    close(this->_client_fd);
     return ;
 }
 

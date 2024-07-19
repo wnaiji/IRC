@@ -8,7 +8,7 @@ RM              = rm -f
 
 NAME            = ircserv
 
-CFLAGS          = -Wall -Wextra -Werror -std=c++98 -fsanitize=address -g3
+CFLAGS          = -Wall -Wextra -Werror -std=c++98 #-fsanitize=address -g3
 
 SRCS            = $(addprefix $(SRC_DIR), \
                     ft_irc.cpp \
