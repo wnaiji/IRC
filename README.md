@@ -23,6 +23,9 @@ This project is about creating your own IRC server. You will use an actual IRC c
 -PART => OK
 -KICK => OK
 
+/dcc send <nom_du_receveur> <emplacement_du_fichier>
+/dcc get <nom_du_receveur> <nom_du_fichier>
+
 # DOC
 
 protocol irc:
