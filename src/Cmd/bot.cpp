@@ -8,7 +8,7 @@ void    putMsg(std::string const & pMsg, Server & Server, int const & fd)
     return ;
 }
 
-void    bothCmd(std::string const & pMsg, Server & Server, int const & fd)
+void    botCmd(std::string const & pMsg, Server & Server, int const & fd)
 {
     if (pMsg.empty() || pMsg == "INIT")
     {

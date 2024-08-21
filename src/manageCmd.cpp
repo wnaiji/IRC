@@ -72,7 +72,7 @@ static bool isKick(std::string const & cmd)
 
 static bool isBoth(std::string const & cmd)
 {
-    return cmd == "BOTH";
+    return cmd == "BOT";
 }
 
 void    manageCmd(std::string const & line, Server & Server, int const & fd)
@@ -157,7 +157,7 @@ void    manageCmd(std::string const & line, Server & Server, int const & fd)
                 break ;
 
             case 14:
-                bothCmd(msg, Server, fd);
+                botCmd(msg, Server, fd);
             }
         }
     }
